@@ -1,410 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <meta name="theme-color" content="#0d1a0f" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Trail Intel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --forest:#0d1a0f;--canopy:#162a18;--moss:#1e3d22;--fern:#2d5c34;
-      --leaf:#4a8c4f;--lime:#7dba57;--glow:#a8e063;--amber:#e8a020;
-      --danger:#e84040;--ice:#b8dde8;--text:#d4ecd6;--dim:#6b9470;
-      --card-bg:rgba(22,42,24,0.85);--border:rgba(74,140,79,0.3);
-    }
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{background:var(--forest);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;position:relative;}
-    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(45,92,52,0.25) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 90%,rgba(13,26,15,0.8) 0%,transparent 70%),repeating-linear-gradient(-45deg,transparent,transparent 2px,rgba(74,140,79,0.015) 2px,rgba(74,140,79,0.015) 4px);pointer-events:none;z-index:0;}
-    .app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 0 40px 0;}
 
-    /* HEADER */
-    .header{background:linear-gradient(180deg,rgba(13,26,15,0.98) 0%,rgba(22,42,24,0.95) 100%);border-bottom:1px solid var(--fern);padding:20px 20px 16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
-    .header-top{display:flex;align-items:center;justify-content:space-between;}
-    .logo{display:flex;align-items:center;gap:10px;}
-    .logo-icon{font-size:28px;line-height:1;filter:drop-shadow(0 0 8px rgba(168,224,99,0.5));}
-    .logo-text{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--glow);text-shadow:0 0 20px rgba(168,224,99,0.4);line-height:1;}
-    .logo-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
-    .status-badge{font-family:'Share Tech Mono',monospace;font-size:10px;padding:4px 10px;border-radius:20px;letter-spacing:1px;display:flex;align-items:center;gap:5px;transition:all 0.3s;}
-    .status-badge.loading{background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.4);color:var(--amber);}
-    .status-badge.ready{background:rgba(168,224,99,0.1);border:1px solid rgba(168,224,99,0.3);color:var(--glow);}
-    .status-badge.error{background:rgba(232,64,64,0.15);border:1px solid rgba(232,64,64,0.4);color:var(--danger);}
-    .pulse{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite;}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
-    .coord-bar{margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-    .coord-bar span{color:var(--leaf);}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-    /* SECTIONS */
-    .section{padding:0 16px;margin-top:20px;opacity:0;transform:translateY(12px);animation:fadeUp 0.5s forwards;}
-    @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
-    .section:nth-child(2){animation-delay:0.05s;}.section:nth-child(3){animation-delay:0.15s;}.section:nth-child(4){animation-delay:0.25s;}.section:nth-child(5){animation-delay:0.35s;}.section:nth-child(6){animation-delay:0.45s;}.section:nth-child(7){animation-delay:0.5s;}.section:nth-child(8){animation-delay:0.55s;}
-    .section-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--fern);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
-    .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+<title>Rod's Trail App</title>
 
-    /* LOCATION PROMPT */
-    .location-prompt{background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.35);border-radius:12px;padding:16px;}
-    .location-prompt-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--amber);letter-spacing:2px;margin-bottom:10px;}
-    .location-prompt p{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);line-height:1.6;margin-bottom:14px;}
-    .loc-btn-row{display:flex;gap:8px;flex-wrap:wrap;}
-    .btn-gps{flex:1;min-width:120px;background:rgba(168,224,99,0.1);border:1px solid rgba(168,224,99,0.4);color:var(--glow);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background 0.2s;}
-    .btn-gps:active{background:rgba(168,224,99,0.2);}
-    .btn-manual{flex:1;min-width:120px;background:rgba(184,221,232,0.08);border:1px solid rgba(184,221,232,0.3);color:var(--ice);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background 0.2s;}
-    .btn-manual:active{background:rgba(184,221,232,0.15);}
-    .manual-input-block{display:none;margin-top:14px;border-top:1px solid var(--border);padding-top:14px;}
-    .manual-input-block.visible{display:block;}
-    .input-row{display:flex;gap:8px;margin-bottom:8px;}
-    .coord-input-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;margin-bottom:4px;}
-    .coord-input{width:100%;background:rgba(0,0,0,0.3);border:1px solid var(--fern);color:var(--lime);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 12px;border-radius:8px;outline:none;transition:border-color 0.2s;}
-    .coord-input:focus{border-color:var(--leaf);}
-    .coord-input::placeholder{color:var(--fern);font-size:11px;}
-    .btn-load{width:100%;background:rgba(74,140,79,0.15);border:1px solid var(--leaf);color:var(--glow);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:11px;border-radius:8px;cursor:pointer;transition:background 0.2s;margin-top:4px;}
-    .btn-load:active{background:rgba(74,140,79,0.3);}
-    .input-hint{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--fern);margin-top:8px;line-height:1.6;}
+<style>
 
-    /* WEATHER HERO */
-    .weather-hero{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:20px;backdrop-filter:blur(8px);position:relative;overflow:hidden;}
-    .weather-hero::before{content:'';position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(168,224,99,0.08) 0%,transparent 70%);pointer-events:none;}
-    .weather-main{display:flex;align-items:flex-start;justify-content:space-between;}
-    .temp-value{font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:1;color:var(--glow);text-shadow:0 0 30px rgba(168,224,99,0.3);}
-    .temp-feels{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);margin-top:4px;}
-    .weather-icon-big{font-size:52px;line-height:1;filter:drop-shadow(0 0 10px rgba(168,224,99,0.3));}
-    .weather-desc{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:600;color:var(--text);letter-spacing:1px;margin-top:8px;text-transform:uppercase;}
-    .weather-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;border-top:1px solid var(--border);padding-top:16px;}
-    .weather-stat{text-align:center;}
-    .weather-stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--lime);line-height:1;}
-    .weather-stat-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;margin-top:3px;}
+body{
+background:#0d1a0f;
+color:#d4ecd6;
+font-family:Arial,Helvetica,sans-serif;
+margin:0;
+}
 
-    /* METRIC CARDS */
-    .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .metric-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px;backdrop-filter:blur(8px);position:relative;overflow:hidden;transition:border-color 0.2s;}
-    .metric-card:active{border-color:var(--leaf);}
-    .metric-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent-color,var(--fern));opacity:0.6;}
-    .metric-icon{font-size:22px;line-height:1;margin-bottom:8px;}
-    .metric-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent-color,var(--lime));line-height:1;}
-    .metric-unit{font-size:14px;color:var(--dim);}
-    .metric-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1.5px;margin-top:4px;text-transform:uppercase;}
-    .metric-sub{font-size:11px;color:var(--dim);margin-top:3px;font-family:'Rajdhani',sans-serif;}
+.header{
+padding:16px;
+background:#162a18;
+border-bottom:1px solid #2d5c34;
+}
 
-    /* SUN CARD */
-    .sun-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;backdrop-filter:blur(8px);}
-    .sun-row{display:flex;justify-content:space-between;align-items:center;}
-    .sun-item{text-align:center;flex:1;}
-    .sun-time{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--amber);line-height:1;}
-    .sun-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1.5px;margin-top:4px;}
-    .sun-divider{font-size:24px;color:var(--fern);}
-    .daylight-bar{margin-top:14px;height:6px;border-radius:3px;background:var(--moss);overflow:hidden;}
-    .daylight-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--amber),var(--glow));transition:width 1s ease;}
-    .daylight-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:6px;text-align:center;}
+.logo{
+font-size:22px;
+font-weight:bold;
+color:#a8e063;
+}
 
-    /* GPS */
-    .gps-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;}
-    .gps-coords{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--lime);letter-spacing:1px;line-height:1.8;}
-    .gps-accuracy{font-size:11px;color:var(--dim);margin-top:8px;}
-    .copy-btn{background:rgba(74,140,79,0.15);border:1px solid rgba(74,140,79,0.3);color:var(--leaf);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:6px;cursor:pointer;margin-top:10px;transition:background 0.2s;display:inline-block;}
-    .copy-btn:active{background:rgba(74,140,79,0.3);}
-    .map-link{display:inline-block;margin-top:8px;margin-left:10px;background:rgba(184,221,232,0.1);border:1px solid rgba(184,221,232,0.25);color:var(--ice);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:6px;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+.status{
+font-size:12px;
+margin-top:6px;
+}
 
-    /* SOS */
-    .sos-card{background:rgba(232,64,64,0.08);border:1px solid rgba(232,64,64,0.35);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
-    .sos-card::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 8px,rgba(232,64,64,0.03) 8px,rgba(232,64,64,0.03) 16px);pointer-events:none;}
-    .sos-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-    .sos-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--danger);letter-spacing:2px;}
-    .sos-badge{background:var(--danger);color:white;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:4px;}
-    .sos-grid{display:flex;flex-direction:column;gap:10px;}
-    .sos-row{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.2);border-radius:8px;padding:10px 12px;text-decoration:none;border:1px solid rgba(232,64,64,0.15);transition:background 0.2s,border-color 0.2s;}
-    .sos-row:active{background:rgba(232,64,64,0.15);border-color:rgba(232,64,64,0.4);}
-    .sos-row-icon{font-size:20px;}.sos-row-info{flex:1;}
-    .sos-row-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;color:var(--text);letter-spacing:0.5px;}
-    .sos-row-detail{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:1px;}
-    .sos-row-arrow{font-size:14px;color:var(--danger);opacity:0.6;}
+.section{
+padding:18px;
+}
 
-    /* CONTACT */
-    .contact-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;}
-    .contact-identity{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
-    .avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--fern),var(--leaf));display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--leaf);}
-    .contact-name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--glow);letter-spacing:1px;line-height:1;}
-    .contact-note{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:3px;}
-    .contact-rows{display:flex;flex-direction:column;gap:8px;}
-    .contact-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(0,0,0,0.2);border-radius:8px;text-decoration:none;border:1px solid transparent;transition:border-color 0.2s;}
-    .contact-row:active{border-color:var(--leaf);}
-    .contact-row-icon{font-size:16px;}.contact-row-info{flex:1;}
-    .contact-row-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;}
-    .contact-row-val{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;color:var(--text);}
+.card{
+background:#162a18;
+border:1px solid #2d5c34;
+padding:16px;
+border-radius:10px;
+margin-bottom:16px;
+}
 
-    /* FOOTER */
-    .footer{text-align:center;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--fern);letter-spacing:2px;padding:24px 16px 8px;}
-    .refresh-btn{display:block;margin:16px auto 0;background:rgba(74,140,79,0.1);border:1px solid var(--fern);color:var(--leaf);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;padding:10px 24px;border-radius:8px;cursor:pointer;transition:background 0.2s;}
-    .refresh-btn:active{background:rgba(74,140,79,0.25);}
+button{
+background:#2d5c34;
+border:none;
+color:white;
+padding:10px 16px;
+border-radius:6px;
+cursor:pointer;
+}
 
-    .card-uv{--accent-color:#e8c020;}.card-aqi{--accent-color:#7dba57;}.card-wind{--accent-color:#b8dde8;}.card-humid{--accent-color:#6bc5e8;}.card-precip{--accent-color:#5090c8;}.card-elev{--accent-color:#c8a060;}
-  </style>
+input{
+padding:10px;
+width:100%;
+margin-bottom:10px;
+border-radius:6px;
+border:1px solid #2d5c34;
+background:#0d1a0f;
+color:white;
+}
+
+.metric{
+font-size:28px;
+color:#a8e063;
+}
+
+.coords{
+font-family:monospace;
+}
+
+</style>
+
 </head>
+
 <body>
-<div class="app">
 
-  <div class="header">
-    <div class="header-top">
-      <div class="logo">
-        <div class="logo-icon">🌲</div>
-        <div>
-          <div class="logo-text">Rod's Trail App</div>
-          <div class="logo-sub">Field Conditions Report</div>
-        </div>
-      </div>
-      <div class="status-badge loading" id="statusBadge">
-        <div class="pulse"></div>
-        <span id="statusText">LOCATING</span>
-      </div>
-    </div>
-    <div class="coord-bar">
-      <span id="latDisplay">LAT —</span>
-      <span id="lngDisplay">LNG —</span>
-      <span id="timeDisplay"></span>
-    </div>
-  </div>
+<div class="header">
 
-  <!-- LOCATION PROMPT -->
-  <div class="section" id="locationSection" style="display:none">
-    <div class="section-label">Location</div>
-    <div class="location-prompt">
-      <div class="location-prompt-title">📍 Set Your Location</div>
-      <p>Tap USE GPS to auto-detect your position, or enter coordinates manually if GPS is unavailable or denied.</p>
-      <div class="loc-btn-row">
-        <button class="btn-gps" onclick="requestGPS()">📡 USE GPS</button>
-        <button class="btn-manual" onclick="toggleManual()">✏️ ENTER MANUALLY</button>
-      </div>
-      <div class="manual-input-block" id="manualBlock">
-        <div class="input-row">
-          <div style="flex:1">
-            <div class="coord-input-label">LATITUDE</div>
-            <input class="coord-input" id="manualLat" type="number" step="0.000001" placeholder="e.g. 43.651070" />
-          </div>
-          <div style="flex:1">
-            <div class="coord-input-label">LONGITUDE</div>
-            <input class="coord-input" id="manualLng" type="number" step="0.000001" placeholder="e.g. -79.347015" />
-          </div>
-        </div>
-        <button class="btn-load" onclick="loadManual()">⚡ LOAD WEATHER DATA</button>
-        <div class="input-hint">
-          Find coords: open Google Maps → long-press your location → coordinates appear at the top.<br>
-          Negative longitude = West (most of North America, e.g. Toronto is -79.38).
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="logo">🌲 Rod's Trail App</div>
 
-  <!-- WEATHER -->
-  <div class="section">
-    <div class="section-label">Current Conditions</div>
-    <div class="weather-hero">
-      <div class="weather-main">
-        <div>
-          <div class="temp-value" id="tempVal">--°</div>
-          <div class="temp-feels" id="feelsLike">FEELS LIKE --°</div>
-        </div>
-        <div class="weather-icon-big" id="weatherIconBig">🌡️</div>
-      </div>
-      <div class="weather-desc" id="weatherDesc">Waiting for location…</div>
-      <div class="weather-grid">
-        <div class="weather-stat"><div class="weather-stat-val" id="precipVal">--</div><div class="weather-stat-label">PRECIP %</div></div>
-        <div class="weather-stat"><div class="weather-stat-val" id="cloudVal">--</div><div class="weather-stat-label">CLOUD CVR</div></div>
-        <div class="weather-stat"><div class="weather-stat-val" id="visVal">--</div><div class="weather-stat-label">VISIBILITY</div></div>
-      </div>
-    </div>
-  </div>
+<div class="status" id="statusText">
+Locating GPS…
+</div>
 
-  <!-- METRICS -->
-  <div class="section">
-    <div class="section-label">Field Metrics</div>
-    <div class="cards-grid">
-      <div class="metric-card card-uv"><div class="metric-icon">☀️</div><div class="metric-val"><span id="uvVal">--</span></div><div class="metric-label">UV INDEX</div><div class="metric-sub" id="uvRisk">—</div></div>
-      <div class="metric-card card-wind"><div class="metric-icon">💨</div><div class="metric-val"><span id="windVal">--</span><span class="metric-unit">km/h</span></div><div class="metric-label">WIND SPEED</div><div class="metric-sub" id="windDir">—</div></div>
-      <div class="metric-card card-humid"><div class="metric-icon">💧</div><div class="metric-val"><span id="humidVal">--</span><span class="metric-unit">%</span></div><div class="metric-label">HUMIDITY</div><div class="metric-sub" id="humidNote">—</div></div>
-      <div class="metric-card card-precip"><div class="metric-icon">🌧️</div><div class="metric-val"><span id="rainVal">--</span><span class="metric-unit">mm</span></div><div class="metric-label">PRECIPITATION</div><div class="metric-sub" id="rainNote">—</div></div>
-      <div class="metric-card card-aqi"><div class="metric-icon">🌿</div><div class="metric-val"><span id="aqiVal">--</span></div><div class="metric-label">AIR QUALITY</div><div class="metric-sub" id="aqiNote">—</div></div>
-      <div class="metric-card card-elev"><div class="metric-icon">⛰️</div><div class="metric-val"><span id="elevVal">--</span><span class="metric-unit">m</span></div><div class="metric-label">ELEVATION</div><div class="metric-sub" id="elevNote">GPS derived</div></div>
-    </div>
-  </div>
-
-  <!-- SUN -->
-  <div class="section">
-    <div class="section-label">Solar Window</div>
-    <div class="sun-card">
-      <div class="sun-row">
-        <div class="sun-item"><div style="font-size:24px">🌅</div><div class="sun-time" id="sunriseTime">--:--</div><div class="sun-label">SUNRISE</div></div>
-        <div class="sun-divider">◆</div>
-        <div class="sun-item"><div style="font-size:24px">⏳</div><div class="sun-time" id="daylightHours" style="color:var(--glow)">--h</div><div class="sun-label">DAYLIGHT</div></div>
-        <div class="sun-divider">◆</div>
-        <div class="sun-item"><div style="font-size:24px">🌇</div><div class="sun-time" id="sunsetTime">--:--</div><div class="sun-label">SUNSET</div></div>
-      </div>
-      <div class="daylight-bar"><div class="daylight-fill" id="daylightFill" style="width:0%"></div></div>
-      <div class="daylight-label" id="daylightProgress">Waiting for location…</div>
-    </div>
-  </div>
-
-  <!-- GPS -->
-  <div class="section">
-    <div class="section-label">GPS Position</div>
-    <div class="gps-card">
-      <div class="gps-coords" id="gpsCoords">Waiting for location…</div>
-      <div class="gps-accuracy" id="gpsAccuracy"></div>
-      <button class="copy-btn" onclick="copyCoords()">⧉ COPY COORDS</button>
-      <a class="map-link" id="mapLink" href="#" target="_blank">🗺 OPEN MAP</a>
-    </div>
-  </div>
-
-  <!-- SOS -->
-  <div class="section">
-    <div class="section-label">Emergency</div>
-    <div class="sos-card">
-      <div class="sos-header"><div class="sos-title">🆘 SOS</div><div class="sos-badge">TAP TO CALL</div></div>
-      <div class="sos-grid">
-        <a class="sos-row" href="tel:911"><div class="sos-row-icon">🚨</div><div class="sos-row-info"><div class="sos-row-title">Emergency Services</div><div class="sos-row-detail">911 · Police / Fire / EMS</div></div><div class="sos-row-arrow">›</div></a>
-        <a class="sos-row" href="tel:18004243673"><div class="sos-row-icon">🏔️</div><div class="sos-row-info"><div class="sos-row-title">Search & Rescue</div><div class="sos-row-detail">1-800-424-3673 · NASAR</div></div><div class="sos-row-arrow">›</div></a>
-        <a class="sos-row" href="tel:+14169182844"><div class="sos-row-icon">👤</div><div class="sos-row-info"><div class="sos-row-title">Suzanne Desrochers (Partner)</div><div class="sos-row-detail">+1 (416) 918-2844</div></div><div class="sos-row-arrow">›</div></a>
-      </div>
-    </div>
-  </div>
-
-  <!-- HIKER ID -->
-  <div class="section">
-    <div class="section-label">Hiker ID</div>
-    <div class="contact-card">
-      <div class="contact-identity">
-        <div class="avatar">🧗</div>
-        <div>
-          <div class="contact-name">Rod Dioso</div>
-          <div class="contact-note">Trail: (park/trail here)</div>
-        </div>
-      </div>
-      <div class="contact-rows">
-        <a class="contact-row" href="tel:+14168448910"><div class="contact-row-icon">📱</div><div class="contact-row-info"><div class="contact-row-label">MOBILE</div><div class="contact-row-val">+1 (416) 844-8910</div></div></a>
-        <div class="contact-row"><div class="contact-row-icon">🩺</div><div class="contact-row-info"><div class="contact-row-label">BLOOD TYPE / ALLERGIES</div><div class="contact-row-val">B- · No known allergies</div></div></div>
-        <div class="contact-row"><div class="contact-row-icon">🎒</div><div class="contact-row-info"><div class="contact-row-label">GEAR / BEACON ID</div><div class="contact-row-val">n/a</div></div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <button class="refresh-btn" onclick="window.location.reload()">↻ REFRESH DATA</button>
-    <div style="margin-top:16px">DATA: OPEN-METEO · SUNRISE-SUNSET.ORG</div>
-    <div style="margin-top:4px">LAST UPDATE: <span id="lastUpdate">--</span></div>
-  </div>
+<div id="coordBar">
+LAT — | LNG —
+</div>
 
 </div>
 
+
+<div class="section">
+
+<div class="card">
+
+<h3>Location</h3>
+
+<button onclick="requestGPS()">📡 Use GPS</button>
+
+<br><br>
+
+<input id="manualLat" placeholder="Latitude">
+
+<input id="manualLng" placeholder="Longitude">
+
+<button onclick="loadManual()">Load Coordinates</button>
+
+</div>
+
+
+<div class="card">
+
+<h3>Coordinates</h3>
+
+<div class="coords" id="coordDisplay">
+Waiting for location…
+</div>
+
+<button onclick="copyCoords()">Copy Coordinates</button>
+
+<br><br>
+
+<a id="mapLink" target="_blank">Open in Google Maps</a>
+
+</div>
+
+
+<div class="card">
+
+<h3>Weather</h3>
+
+<div class="metric" id="tempVal">--°</div>
+
+<div id="weatherDesc">Waiting for location</div>
+
+</div>
+
+
+</div>
+
+
 <script>
 
-let userLat = null;
-let userLng = null;
+let currentLat=null
+let currentLng=null
 
-function updateStatus(type, text) {
-  const badge = document.getElementById("statusBadge");
-  const label = document.getElementById("statusText");
 
-  badge.classList.remove("loading","ready","error");
-  badge.classList.add(type);
-  label.textContent = text;
+function updateStatus(text){
+document.getElementById("statusText").textContent=text
 }
 
-function setCoords(lat, lng) {
-  userLat = lat;
-  userLng = lng;
 
-  document.getElementById("latDisplay").textContent =
-    "LAT " + lat.toFixed(5);
+function updateCoords(lat,lng){
 
-  document.getElementById("lngDisplay").textContent =
-    "LNG " + lng.toFixed(5);
+currentLat=lat
+currentLng=lng
 
-  updateStatus("ready","GPS LOCK");
+document.getElementById("coordBar").textContent=
+"LAT "+lat.toFixed(5)+" | LNG "+lng.toFixed(5)
 
-  loadWeather(lat, lng);
-}
+document.getElementById("coordDisplay").textContent=
+lat.toFixed(6)+", "+lng.toFixed(6)
 
-function requestGPS() {
+document.getElementById("mapLink").href=
+"https://maps.google.com/?q="+lat+","+lng
 
-  if (!navigator.geolocation) {
-    updateStatus("error","NO GPS");
-    showManualEntry();
-    return;
-  }
+updateStatus("GPS Locked")
 
-  updateStatus("loading","LOCATING");
-
-  navigator.geolocation.getCurrentPosition(
-
-    (position) => {
-
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      setCoords(lat, lng);
-
-    },
-
-    (error) => {
-
-      console.log(error);
-
-      updateStatus("error","GPS DENIED");
-
-      document.getElementById("locationSection").style.display="block";
-
-    },
-
-    {
-      enableHighAccuracy:true,
-      timeout:10000,
-      maximumAge:60000
-    }
-
-  );
+loadWeather(lat,lng)
 
 }
+
+
+function requestGPS(){
+
+if(!navigator.geolocation){
+
+updateStatus("GPS not supported")
+
+return
+
+}
+
+updateStatus("Locating GPS…")
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+let lat=position.coords.latitude
+let lng=position.coords.longitude
+
+updateCoords(lat,lng)
+
+},
+
+function(error){
+
+console.log(error)
+
+updateStatus("GPS blocked — enter coordinates")
+
+},
+
+{
+enableHighAccuracy:true,
+timeout:10000,
+maximumAge:30000
+}
+
+)
+
+}
+
 
 function loadManual(){
 
-  const lat = parseFloat(document.getElementById("manualLat").value);
-  const lng = parseFloat(document.getElementById("manualLng").value);
+let lat=parseFloat(document.getElementById("manualLat").value)
+let lng=parseFloat(document.getElementById("manualLng").value)
 
-  if(isNaN(lat) || isNaN(lng)){
-    alert("Enter valid coordinates");
-    return;
-  }
+if(isNaN(lat)||isNaN(lng)){
+alert("Enter valid coordinates")
+return
+}
 
-  setCoords(lat,lng);
+updateCoords(lat,lng)
 
 }
 
-function toggleManual(){
 
-  const block = document.getElementById("manualBlock");
+function copyCoords(){
 
-  block.classList.toggle("visible");
+if(currentLat==null)return
+
+let text=currentLat+","+currentLng
+
+navigator.clipboard.writeText(text)
+
+alert("Coordinates copied")
 
 }
 
-function showManualEntry(){
 
-  document.getElementById("locationSection").style.display="block";
+async function loadWeather(lat,lng){
+
+try{
+
+updateStatus("Loading weather…")
+
+let url=
+"https://api.open-meteo.com/v1/forecast?latitude="+lat+
+"&longitude="+lng+
+"&current_weather=true"
+
+let res=await fetch(url)
+
+let data=await res.json()
+
+let temp=data.current_weather.temperature
+
+document.getElementById("tempVal").textContent=temp+"°C"
+
+document.getElementById("weatherDesc").textContent="Current temperature"
+
+updateStatus("Trail Intel Ready")
+
+}catch(e){
+
+console.log(e)
+
+updateStatus("Weather unavailable")
 
 }
 
-window.addEventListener("load", () => {
+}
 
-  requestGPS();
 
-  const now = new Date();
-  document.getElementById("timeDisplay").textContent =
-    now.toLocaleTimeString();
+function updateClock(){
 
-});
+let now=new Date()
+
+}
+
+
+window.onload=function(){
+
+requestGPS()
+
+setInterval(updateClock,1000)
+
+}
 
 </script>
+
+
 </body>
+
 </html>
