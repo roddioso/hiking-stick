@@ -1204,21 +1204,26 @@
 
   if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
+function requestLocation() {
+  setStatus('loading', 'LOCATING');
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
       pos => {
         setStatus('loading', 'FETCHING');
+        document.getElementById('locationBtn').style.display = 'none';
         loadAll(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude);
       },
       err => {
         setStatus('error', 'NO GPS');
-        document.getElementById('gpsCoords').textContent = 'Location access denied. Enable GPS in browser settings.';
-        // Still try to fetch with a rough IP-based fallback isn't possible without an API key
-        // Graceful degradation: show static info only
+        document.getElementById('locationBtn').style.display = 'block';
+        document.getElementById('gpsCoords').textContent = 'Tap the button below to allow location access.';
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
     );
-  } else {
-    setStatus('error', 'NO GPS API');
   }
+}
+
+requestLocation();
 </script>
 </body>
 </html>
