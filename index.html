@@ -12,715 +12,140 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --forest:    #0d1a0f;
-      --canopy:    #162a18;
-      --moss:      #1e3d22;
-      --fern:      #2d5c34;
-      --leaf:      #4a8c4f;
-      --lime:      #7dba57;
-      --glow:      #a8e063;
-      --amber:     #e8a020;
-      --danger:    #e84040;
-      --ice:       #b8dde8;
-      --text:      #d4ecd6;
-      --dim:       #6b9470;
-      --card-bg:   rgba(22, 42, 24, 0.85);
-      --border:    rgba(74, 140, 79, 0.3);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--forest);
-      color: var(--text);
-      font-family: 'Rajdhani', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* Animated forest background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(45,92,52,0.25) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(13,26,15,0.8) 0%, transparent 70%),
-        repeating-linear-gradient(
-          -45deg,
-          transparent,
-          transparent 2px,
-          rgba(74,140,79,0.015) 2px,
-          rgba(74,140,79,0.015) 4px
-        );
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .app {
-      position: relative;
-      z-index: 1;
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 0 0 40px 0;
-    }
-
-    /* ─── HEADER ─── */
-    .header {
-      background: linear-gradient(180deg, rgba(13,26,15,0.98) 0%, rgba(22,42,24,0.95) 100%);
-      border-bottom: 1px solid var(--fern);
-      padding: 20px 20px 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-    }
-
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-icon {
-      font-size: 28px;
-      line-height: 1;
-      filter: drop-shadow(0 0 8px rgba(168,224,99,0.5));
-    }
-
-    .logo-text {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      letter-spacing: 3px;
-      color: var(--glow);
-      text-shadow: 0 0 20px rgba(168,224,99,0.4);
-      line-height: 1;
-    }
-
-    .logo-sub {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      color: var(--dim);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    .status-badge {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.3s;
-    }
-
-    .status-badge.loading {
-      background: rgba(232,160,32,0.15);
-      border: 1px solid rgba(232,160,32,0.4);
-      color: var(--amber);
-    }
-
-    .status-badge.ready {
-      background: rgba(168,224,99,0.1);
-      border: 1px solid rgba(168,224,99,0.3);
-      color: var(--glow);
-    }
-
-    .status-badge.error {
-      background: rgba(232,64,64,0.15);
-      border: 1px solid rgba(232,64,64,0.4);
-      color: var(--danger);
-    }
-
-    .pulse {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
-    }
-
-    .coord-bar {
-      margin-top: 10px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      color: var(--dim);
-      letter-spacing: 1px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .coord-bar span { color: var(--leaf); }
-
-    /* ─── SECTIONS ─── */
-    .section {
-      padding: 0 16px;
-      margin-top: 20px;
-      opacity: 0;
-      transform: translateY(12px);
-      animation: fadeUp 0.5s forwards;
-    }
-
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section:nth-child(2) { animation-delay: 0.05s; }
-    .section:nth-child(3) { animation-delay: 0.15s; }
-    .section:nth-child(4) { animation-delay: 0.25s; }
-    .section:nth-child(5) { animation-delay: 0.35s; }
-    .section:nth-child(6) { animation-delay: 0.45s; }
-
-    .section-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: var(--fern);
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ─── WEATHER HERO ─── */
-    .weather-hero {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      backdrop-filter: blur(8px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .weather-hero::before {
-      content: '';
-      position: absolute;
-      top: -20px;
-      right: -20px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(168,224,99,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .weather-main {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-    }
-
-    .temp-block {}
-
-    .temp-value {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 72px;
-      line-height: 1;
-      color: var(--glow);
-      text-shadow: 0 0 30px rgba(168,224,99,0.3);
-    }
-
-    .temp-feels {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--dim);
-      margin-top: 4px;
-    }
-
-    .weather-icon-big {
-      font-size: 52px;
-      line-height: 1;
-      filter: drop-shadow(0 0 10px rgba(168,224,99,0.3));
-    }
-
-    .weather-desc {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: 1px;
-      margin-top: 8px;
-      text-transform: uppercase;
-    }
-
-    .weather-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 16px;
-      border-top: 1px solid var(--border);
-      padding-top: 16px;
-    }
-
-    .weather-stat {
-      text-align: center;
-    }
-
-    .weather-stat-val {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      color: var(--lime);
-      line-height: 1;
-    }
-
-    .weather-stat-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      color: var(--dim);
-      letter-spacing: 1px;
-      margin-top: 3px;
-    }
-
-    /* ─── METRIC CARDS ─── */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .metric-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      backdrop-filter: blur(8px);
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
-
-    .metric-card:active { border-color: var(--leaf); }
-
-    .metric-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--accent-color, var(--fern));
-      opacity: 0.6;
-    }
-
-    .metric-icon {
-      font-size: 22px;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .metric-val {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      color: var(--accent-color, var(--lime));
-      line-height: 1;
-    }
-
-    .metric-unit {
-      font-size: 14px;
-      color: var(--dim);
-    }
-
-    .metric-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      color: var(--dim);
-      letter-spacing: 1.5px;
-      margin-top: 4px;
-      text-transform: uppercase;
-    }
-
-    .metric-sub {
-      font-size: 11px;
-      color: var(--dim);
-      margin-top: 3px;
-      font-family: 'Rajdhani', sans-serif;
-    }
-
-    /* ─── SUN CARD ─── */
-    .sun-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      backdrop-filter: blur(8px);
-    }
-
-    .sun-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .sun-item {
-      text-align: center;
-      flex: 1;
-    }
-
-    .sun-time {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      color: var(--amber);
-      line-height: 1;
-    }
-
-    .sun-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      color: var(--dim);
-      letter-spacing: 1.5px;
-      margin-top: 4px;
-    }
-
-    .sun-divider {
-      font-size: 24px;
-      color: var(--fern);
-    }
-
-    .daylight-bar {
-      margin-top: 14px;
-      height: 6px;
-      border-radius: 3px;
-      background: var(--moss);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .daylight-fill {
-      height: 100%;
-      border-radius: 3px;
-      background: linear-gradient(90deg, var(--amber), var(--glow));
-      transition: width 1s ease;
-    }
-
-    .daylight-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      color: var(--dim);
-      margin-top: 6px;
-      text-align: center;
-    }
-
-    /* ─── SOS / EMERGENCY ─── */
-    .sos-card {
-      background: rgba(232,64,64,0.08);
-      border: 1px solid rgba(232,64,64,0.35);
-      border-radius: 12px;
-      padding: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .sos-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 8px,
-        rgba(232,64,64,0.03) 8px,
-        rgba(232,64,64,0.03) 16px
-      );
-      pointer-events: none;
-    }
-
-    .sos-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .sos-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      color: var(--danger);
-      letter-spacing: 2px;
-    }
-
-    .sos-badge {
-      background: var(--danger);
-      color: white;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 2px;
-      padding: 3px 8px;
-      border-radius: 4px;
-    }
-
-    .sos-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .sos-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 8px;
-      padding: 10px 12px;
-      text-decoration: none;
-      border: 1px solid rgba(232,64,64,0.15);
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .sos-row:active {
-      background: rgba(232,64,64,0.15);
-      border-color: rgba(232,64,64,0.4);
-    }
-
-    .sos-row-icon { font-size: 20px; }
-
-    .sos-row-info { flex: 1; }
-
-    .sos-row-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--text);
-      letter-spacing: 0.5px;
-    }
-
-    .sos-row-detail {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      color: var(--dim);
-      margin-top: 1px;
-    }
-
-    .sos-row-arrow {
-      font-size: 14px;
-      color: var(--danger);
-      opacity: 0.6;
-    }
-
-    /* ─── CONTACT CARD ─── */
-    .contact-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .contact-identity {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--fern), var(--leaf));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      border: 2px solid var(--leaf);
-    }
-
-    .contact-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      color: var(--glow);
-      letter-spacing: 1px;
-      line-height: 1;
-    }
-
-    .contact-note {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      color: var(--dim);
-      margin-top: 3px;
-    }
-
-    .contact-rows { display: flex; flex-direction: column; gap: 8px; }
-
-    .contact-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 10px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 8px;
-      text-decoration: none;
-      border: 1px solid transparent;
-      transition: border-color 0.2s;
-    }
-
-    .contact-row:active { border-color: var(--leaf); }
-
-    .contact-row-icon { font-size: 16px; }
-
-    .contact-row-info { flex: 1; }
-
-    .contact-row-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      color: var(--dim);
-      letter-spacing: 1px;
-    }
-
-    .contact-row-val {
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--text);
-    }
-
-    /* ─── GPS CARD ─── */
-    .gps-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .gps-coords {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 14px;
-      color: var(--lime);
-      letter-spacing: 1px;
-      line-height: 1.8;
-    }
-
-    .gps-accuracy {
-      font-size: 11px;
-      color: var(--dim);
-      margin-top: 8px;
-    }
-
-    .copy-btn {
-      background: rgba(74,140,79,0.15);
-      border: 1px solid rgba(74,140,79,0.3);
-      color: var(--leaf);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 1px;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background 0.2s;
-      display: inline-block;
-    }
-
-    .copy-btn:active { background: rgba(74,140,79,0.3); }
-
-    .map-link {
-      display: inline-block;
-      margin-top: 8px;
-      margin-left: 10px;
-      background: rgba(184,221,232,0.1);
-      border: 1px solid rgba(184,221,232,0.25);
-      color: var(--ice);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 1px;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s;
-    }
-
-    /* ─── LOADING / ERROR STATES ─── */
-    .skeleton {
-      background: linear-gradient(90deg, var(--moss) 25%, var(--fern) 50%, var(--moss) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 6px;
-      display: inline-block;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    .error-msg {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: rgba(232,64,64,0.7);
-      padding: 6px 10px;
-      background: rgba(232,64,64,0.08);
-      border-radius: 6px;
-      margin-top: 8px;
-      border-left: 2px solid var(--danger);
-    }
-
-    /* ─── FOOTER ─── */
-    .footer {
-      text-align: center;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px;
-      color: var(--fern);
-      letter-spacing: 2px;
-      padding: 24px 16px 8px;
-    }
-
-    .refresh-btn {
-      display: block;
-      margin: 16px auto 0;
-      background: rgba(74,140,79,0.1);
-      border: 1px solid var(--fern);
-      color: var(--leaf);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      padding: 10px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .refresh-btn:active { background: rgba(74,140,79,0.25); }
-
-    /* Metric accent colors */
-    .card-uv    { --accent-color: #e8c020; }
-    .card-aqi   { --accent-color: #7dba57; }
-    .card-wind  { --accent-color: #b8dde8; }
-    .card-humid { --accent-color: #6bc5e8; }
-    .card-precip{ --accent-color: #5090c8; }
-    .card-elev  { --accent-color: #c8a060; }
+      --forest:#0d1a0f;--canopy:#162a18;--moss:#1e3d22;--fern:#2d5c34;
+      --leaf:#4a8c4f;--lime:#7dba57;--glow:#a8e063;--amber:#e8a020;
+      --danger:#e84040;--ice:#b8dde8;--text:#d4ecd6;--dim:#6b9470;
+      --card-bg:rgba(22,42,24,0.85);--border:rgba(74,140,79,0.3);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--forest);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden;position:relative;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(45,92,52,0.25) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 90%,rgba(13,26,15,0.8) 0%,transparent 70%),repeating-linear-gradient(-45deg,transparent,transparent 2px,rgba(74,140,79,0.015) 2px,rgba(74,140,79,0.015) 4px);pointer-events:none;z-index:0;}
+    .app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 0 40px 0;}
+
+    /* HEADER */
+    .header{background:linear-gradient(180deg,rgba(13,26,15,0.98) 0%,rgba(22,42,24,0.95) 100%);border-bottom:1px solid var(--fern);padding:20px 20px 16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+    .header-top{display:flex;align-items:center;justify-content:space-between;}
+    .logo{display:flex;align-items:center;gap:10px;}
+    .logo-icon{font-size:28px;line-height:1;filter:drop-shadow(0 0 8px rgba(168,224,99,0.5));}
+    .logo-text{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--glow);text-shadow:0 0 20px rgba(168,224,99,0.4);line-height:1;}
+    .logo-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+    .status-badge{font-family:'Share Tech Mono',monospace;font-size:10px;padding:4px 10px;border-radius:20px;letter-spacing:1px;display:flex;align-items:center;gap:5px;transition:all 0.3s;}
+    .status-badge.loading{background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.4);color:var(--amber);}
+    .status-badge.ready{background:rgba(168,224,99,0.1);border:1px solid rgba(168,224,99,0.3);color:var(--glow);}
+    .status-badge.error{background:rgba(232,64,64,0.15);border:1px solid rgba(232,64,64,0.4);color:var(--danger);}
+    .pulse{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
+    .coord-bar{margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+    .coord-bar span{color:var(--leaf);}
+
+    /* SECTIONS */
+    .section{padding:0 16px;margin-top:20px;opacity:0;transform:translateY(12px);animation:fadeUp 0.5s forwards;}
+    @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+    .section:nth-child(2){animation-delay:0.05s;}.section:nth-child(3){animation-delay:0.15s;}.section:nth-child(4){animation-delay:0.25s;}.section:nth-child(5){animation-delay:0.35s;}.section:nth-child(6){animation-delay:0.45s;}.section:nth-child(7){animation-delay:0.5s;}.section:nth-child(8){animation-delay:0.55s;}
+    .section-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--fern);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+    .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    /* LOCATION PROMPT */
+    .location-prompt{background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.35);border-radius:12px;padding:16px;}
+    .location-prompt-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--amber);letter-spacing:2px;margin-bottom:10px;}
+    .location-prompt p{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);line-height:1.6;margin-bottom:14px;}
+    .loc-btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+    .btn-gps{flex:1;min-width:120px;background:rgba(168,224,99,0.1);border:1px solid rgba(168,224,99,0.4);color:var(--glow);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background 0.2s;}
+    .btn-gps:active{background:rgba(168,224,99,0.2);}
+    .btn-manual{flex:1;min-width:120px;background:rgba(184,221,232,0.08);border:1px solid rgba(184,221,232,0.3);color:var(--ice);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background 0.2s;}
+    .btn-manual:active{background:rgba(184,221,232,0.15);}
+    .manual-input-block{display:none;margin-top:14px;border-top:1px solid var(--border);padding-top:14px;}
+    .manual-input-block.visible{display:block;}
+    .input-row{display:flex;gap:8px;margin-bottom:8px;}
+    .coord-input-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;margin-bottom:4px;}
+    .coord-input{width:100%;background:rgba(0,0,0,0.3);border:1px solid var(--fern);color:var(--lime);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 12px;border-radius:8px;outline:none;transition:border-color 0.2s;}
+    .coord-input:focus{border-color:var(--leaf);}
+    .coord-input::placeholder{color:var(--fern);font-size:11px;}
+    .btn-load{width:100%;background:rgba(74,140,79,0.15);border:1px solid var(--leaf);color:var(--glow);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:11px;border-radius:8px;cursor:pointer;transition:background 0.2s;margin-top:4px;}
+    .btn-load:active{background:rgba(74,140,79,0.3);}
+    .input-hint{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--fern);margin-top:8px;line-height:1.6;}
+
+    /* WEATHER HERO */
+    .weather-hero{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:20px;backdrop-filter:blur(8px);position:relative;overflow:hidden;}
+    .weather-hero::before{content:'';position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(168,224,99,0.08) 0%,transparent 70%);pointer-events:none;}
+    .weather-main{display:flex;align-items:flex-start;justify-content:space-between;}
+    .temp-value{font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:1;color:var(--glow);text-shadow:0 0 30px rgba(168,224,99,0.3);}
+    .temp-feels{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);margin-top:4px;}
+    .weather-icon-big{font-size:52px;line-height:1;filter:drop-shadow(0 0 10px rgba(168,224,99,0.3));}
+    .weather-desc{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:600;color:var(--text);letter-spacing:1px;margin-top:8px;text-transform:uppercase;}
+    .weather-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;border-top:1px solid var(--border);padding-top:16px;}
+    .weather-stat{text-align:center;}
+    .weather-stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--lime);line-height:1;}
+    .weather-stat-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;margin-top:3px;}
+
+    /* METRIC CARDS */
+    .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .metric-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px;backdrop-filter:blur(8px);position:relative;overflow:hidden;transition:border-color 0.2s;}
+    .metric-card:active{border-color:var(--leaf);}
+    .metric-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent-color,var(--fern));opacity:0.6;}
+    .metric-icon{font-size:22px;line-height:1;margin-bottom:8px;}
+    .metric-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent-color,var(--lime));line-height:1;}
+    .metric-unit{font-size:14px;color:var(--dim);}
+    .metric-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1.5px;margin-top:4px;text-transform:uppercase;}
+    .metric-sub{font-size:11px;color:var(--dim);margin-top:3px;font-family:'Rajdhani',sans-serif;}
+
+    /* SUN CARD */
+    .sun-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;backdrop-filter:blur(8px);}
+    .sun-row{display:flex;justify-content:space-between;align-items:center;}
+    .sun-item{text-align:center;flex:1;}
+    .sun-time{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--amber);line-height:1;}
+    .sun-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1.5px;margin-top:4px;}
+    .sun-divider{font-size:24px;color:var(--fern);}
+    .daylight-bar{margin-top:14px;height:6px;border-radius:3px;background:var(--moss);overflow:hidden;}
+    .daylight-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--amber),var(--glow));transition:width 1s ease;}
+    .daylight-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:6px;text-align:center;}
+
+    /* GPS */
+    .gps-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;}
+    .gps-coords{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--lime);letter-spacing:1px;line-height:1.8;}
+    .gps-accuracy{font-size:11px;color:var(--dim);margin-top:8px;}
+    .copy-btn{background:rgba(74,140,79,0.15);border:1px solid rgba(74,140,79,0.3);color:var(--leaf);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:6px;cursor:pointer;margin-top:10px;transition:background 0.2s;display:inline-block;}
+    .copy-btn:active{background:rgba(74,140,79,0.3);}
+    .map-link{display:inline-block;margin-top:8px;margin-left:10px;background:rgba(184,221,232,0.1);border:1px solid rgba(184,221,232,0.25);color:var(--ice);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;padding:6px 14px;border-radius:6px;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+
+    /* SOS */
+    .sos-card{background:rgba(232,64,64,0.08);border:1px solid rgba(232,64,64,0.35);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
+    .sos-card::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 8px,rgba(232,64,64,0.03) 8px,rgba(232,64,64,0.03) 16px);pointer-events:none;}
+    .sos-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .sos-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--danger);letter-spacing:2px;}
+    .sos-badge{background:var(--danger);color:white;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:4px;}
+    .sos-grid{display:flex;flex-direction:column;gap:10px;}
+    .sos-row{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.2);border-radius:8px;padding:10px 12px;text-decoration:none;border:1px solid rgba(232,64,64,0.15);transition:background 0.2s,border-color 0.2s;}
+    .sos-row:active{background:rgba(232,64,64,0.15);border-color:rgba(232,64,64,0.4);}
+    .sos-row-icon{font-size:20px;}.sos-row-info{flex:1;}
+    .sos-row-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;color:var(--text);letter-spacing:0.5px;}
+    .sos-row-detail{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:1px;}
+    .sos-row-arrow{font-size:14px;color:var(--danger);opacity:0.6;}
+
+    /* CONTACT */
+    .contact-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;}
+    .contact-identity{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    .avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--fern),var(--leaf));display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--leaf);}
+    .contact-name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--glow);letter-spacing:1px;line-height:1;}
+    .contact-note{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:3px;}
+    .contact-rows{display:flex;flex-direction:column;gap:8px;}
+    .contact-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(0,0,0,0.2);border-radius:8px;text-decoration:none;border:1px solid transparent;transition:border-color 0.2s;}
+    .contact-row:active{border-color:var(--leaf);}
+    .contact-row-icon{font-size:16px;}.contact-row-info{flex:1;}
+    .contact-row-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;}
+    .contact-row-val{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;color:var(--text);}
+
+    /* FOOTER */
+    .footer{text-align:center;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--fern);letter-spacing:2px;padding:24px 16px 8px;}
+    .refresh-btn{display:block;margin:16px auto 0;background:rgba(74,140,79,0.1);border:1px solid var(--fern);color:var(--leaf);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;padding:10px 24px;border-radius:8px;cursor:pointer;transition:background 0.2s;}
+    .refresh-btn:active{background:rgba(74,140,79,0.25);}
+
+    .card-uv{--accent-color:#e8c020;}.card-aqi{--accent-color:#7dba57;}.card-wind{--accent-color:#b8dde8;}.card-humid{--accent-color:#6bc5e8;}.card-precip{--accent-color:#5090c8;}.card-elev{--accent-color:#c8a060;}
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- ─── HEADER ─── -->
   <div class="header">
     <div class="header-top">
       <div class="logo">
@@ -735,212 +160,135 @@
         <span id="statusText">LOCATING</span>
       </div>
     </div>
-    <div class="coord-bar" id="coordBar">
+    <div class="coord-bar">
       <span id="latDisplay">LAT —</span>
       <span id="lngDisplay">LNG —</span>
       <span id="timeDisplay"></span>
-      
-        <button id="locationBtn" class="refresh-btn" style="display:none; background:rgba(232,160,32,0.15); border-color:var(--amber); color:var(--amber);" onclick="requestLocation()">
-          📍 TAP TO ENABLE LOCATION
-        </button>
-      
     </div>
   </div>
 
-  <!-- ─── WEATHER HERO ─── -->
+  <!-- LOCATION PROMPT -->
+  <div class="section" id="locationSection">
+    <div class="section-label">Location</div>
+    <div class="location-prompt">
+      <div class="location-prompt-title">📍 Set Your Location</div>
+      <p>Tap USE GPS to auto-detect your position, or enter coordinates manually if GPS is unavailable or denied.</p>
+      <div class="loc-btn-row">
+        <button class="btn-gps" onclick="requestGPS()">📡 USE GPS</button>
+        <button class="btn-manual" onclick="toggleManual()">✏️ ENTER MANUALLY</button>
+      </div>
+      <div class="manual-input-block" id="manualBlock">
+        <div class="input-row">
+          <div style="flex:1">
+            <div class="coord-input-label">LATITUDE</div>
+            <input class="coord-input" id="manualLat" type="number" step="0.000001" placeholder="e.g. 43.651070" />
+          </div>
+          <div style="flex:1">
+            <div class="coord-input-label">LONGITUDE</div>
+            <input class="coord-input" id="manualLng" type="number" step="0.000001" placeholder="e.g. -79.347015" />
+          </div>
+        </div>
+        <button class="btn-load" onclick="loadManual()">⚡ LOAD WEATHER DATA</button>
+        <div class="input-hint">
+          Find coords: open Google Maps → long-press your location → coordinates appear at the top.<br>
+          Negative longitude = West (most of North America, e.g. Toronto is -79.38).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEATHER -->
   <div class="section">
     <div class="section-label">Current Conditions</div>
-    <div class="weather-hero" id="weatherHero">
+    <div class="weather-hero">
       <div class="weather-main">
-        <div class="temp-block">
+        <div>
           <div class="temp-value" id="tempVal">--°</div>
           <div class="temp-feels" id="feelsLike">FEELS LIKE --°</div>
         </div>
         <div class="weather-icon-big" id="weatherIconBig">🌡️</div>
       </div>
-      <div class="weather-desc" id="weatherDesc">Loading weather data…</div>
+      <div class="weather-desc" id="weatherDesc">Waiting for location…</div>
       <div class="weather-grid">
-        <div class="weather-stat">
-          <div class="weather-stat-val" id="precipVal">--</div>
-          <div class="weather-stat-label">PRECIP %</div>
-        </div>
-        <div class="weather-stat">
-          <div class="weather-stat-val" id="cloudVal">--</div>
-          <div class="weather-stat-label">CLOUD CVR</div>
-        </div>
-        <div class="weather-stat">
-          <div class="weather-stat-val" id="visVal">--</div>
-          <div class="weather-stat-label">VISIBILITY</div>
-        </div>
+        <div class="weather-stat"><div class="weather-stat-val" id="precipVal">--</div><div class="weather-stat-label">PRECIP %</div></div>
+        <div class="weather-stat"><div class="weather-stat-val" id="cloudVal">--</div><div class="weather-stat-label">CLOUD CVR</div></div>
+        <div class="weather-stat"><div class="weather-stat-val" id="visVal">--</div><div class="weather-stat-label">VISIBILITY</div></div>
       </div>
     </div>
   </div>
 
-  <!-- ─── METRIC CARDS ─── -->
+  <!-- METRICS -->
   <div class="section">
     <div class="section-label">Field Metrics</div>
     <div class="cards-grid">
-      <div class="metric-card card-uv">
-        <div class="metric-icon">☀️</div>
-        <div class="metric-val"><span id="uvVal">--</span></div>
-        <div class="metric-label">UV INDEX</div>
-        <div class="metric-sub" id="uvRisk">Loading…</div>
-      </div>
-      <div class="metric-card card-wind">
-        <div class="metric-icon">💨</div>
-        <div class="metric-val"><span id="windVal">--</span><span class="metric-unit">km/h</span></div>
-        <div class="metric-label">WIND SPEED</div>
-        <div class="metric-sub" id="windDir">Loading…</div>
-      </div>
-      <div class="metric-card card-humid">
-        <div class="metric-icon">💧</div>
-        <div class="metric-val"><span id="humidVal">--</span><span class="metric-unit">%</span></div>
-        <div class="metric-label">HUMIDITY</div>
-        <div class="metric-sub" id="humidNote">Loading…</div>
-      </div>
-      <div class="metric-card card-precip">
-        <div class="metric-icon">🌧️</div>
-        <div class="metric-val"><span id="rainVal">--</span><span class="metric-unit">mm</span></div>
-        <div class="metric-label">PRECIPITATION</div>
-        <div class="metric-sub" id="rainNote">Loading…</div>
-      </div>
-      <div class="metric-card card-aqi">
-        <div class="metric-icon">🌿</div>
-        <div class="metric-val"><span id="aqiVal">--</span></div>
-        <div class="metric-label">AIR QUALITY</div>
-        <div class="metric-sub" id="aqiNote">Loading…</div>
-      </div>
-      <div class="metric-card card-elev">
-        <div class="metric-icon">⛰️</div>
-        <div class="metric-val"><span id="elevVal">--</span><span class="metric-unit">m</span></div>
-        <div class="metric-label">ELEVATION</div>
-        <div class="metric-sub" id="elevNote">GPS derived</div>
-      </div>
+      <div class="metric-card card-uv"><div class="metric-icon">☀️</div><div class="metric-val"><span id="uvVal">--</span></div><div class="metric-label">UV INDEX</div><div class="metric-sub" id="uvRisk">—</div></div>
+      <div class="metric-card card-wind"><div class="metric-icon">💨</div><div class="metric-val"><span id="windVal">--</span><span class="metric-unit">km/h</span></div><div class="metric-label">WIND SPEED</div><div class="metric-sub" id="windDir">—</div></div>
+      <div class="metric-card card-humid"><div class="metric-icon">💧</div><div class="metric-val"><span id="humidVal">--</span><span class="metric-unit">%</span></div><div class="metric-label">HUMIDITY</div><div class="metric-sub" id="humidNote">—</div></div>
+      <div class="metric-card card-precip"><div class="metric-icon">🌧️</div><div class="metric-val"><span id="rainVal">--</span><span class="metric-unit">mm</span></div><div class="metric-label">PRECIPITATION</div><div class="metric-sub" id="rainNote">—</div></div>
+      <div class="metric-card card-aqi"><div class="metric-icon">🌿</div><div class="metric-val"><span id="aqiVal">--</span></div><div class="metric-label">AIR QUALITY</div><div class="metric-sub" id="aqiNote">—</div></div>
+      <div class="metric-card card-elev"><div class="metric-icon">⛰️</div><div class="metric-val"><span id="elevVal">--</span><span class="metric-unit">m</span></div><div class="metric-label">ELEVATION</div><div class="metric-sub" id="elevNote">GPS derived</div></div>
     </div>
   </div>
 
-  <!-- ─── SUNRISE / SUNSET ─── -->
+  <!-- SUN -->
   <div class="section">
     <div class="section-label">Solar Window</div>
     <div class="sun-card">
       <div class="sun-row">
-        <div class="sun-item">
-          <div style="font-size:24px">🌅</div>
-          <div class="sun-time" id="sunriseTime">--:--</div>
-          <div class="sun-label">SUNRISE</div>
-        </div>
+        <div class="sun-item"><div style="font-size:24px">🌅</div><div class="sun-time" id="sunriseTime">--:--</div><div class="sun-label">SUNRISE</div></div>
         <div class="sun-divider">◆</div>
-        <div class="sun-item">
-          <div style="font-size:24px">⏳</div>
-          <div class="sun-time" id="daylightHours" style="color:var(--glow)">--h</div>
-          <div class="sun-label">DAYLIGHT</div>
-        </div>
+        <div class="sun-item"><div style="font-size:24px">⏳</div><div class="sun-time" id="daylightHours" style="color:var(--glow)">--h</div><div class="sun-label">DAYLIGHT</div></div>
         <div class="sun-divider">◆</div>
-        <div class="sun-item">
-          <div style="font-size:24px">🌇</div>
-          <div class="sun-time" id="sunsetTime">--:--</div>
-          <div class="sun-label">SUNSET</div>
-        </div>
+        <div class="sun-item"><div style="font-size:24px">🌇</div><div class="sun-time" id="sunsetTime">--:--</div><div class="sun-label">SUNSET</div></div>
       </div>
-      <div class="daylight-bar">
-        <div class="daylight-fill" id="daylightFill" style="width:0%"></div>
-      </div>
-      <div class="daylight-label" id="daylightProgress">Calculating solar position…</div>
+      <div class="daylight-bar"><div class="daylight-fill" id="daylightFill" style="width:0%"></div></div>
+      <div class="daylight-label" id="daylightProgress">Waiting for location…</div>
     </div>
   </div>
 
-  <!-- ─── GPS LOCATION ─── -->
+  <!-- GPS -->
   <div class="section">
     <div class="section-label">GPS Position</div>
     <div class="gps-card">
-      <div class="gps-coords" id="gpsCoords">
-        Acquiring GPS signal…
-      </div>
+      <div class="gps-coords" id="gpsCoords">Waiting for location…</div>
       <div class="gps-accuracy" id="gpsAccuracy"></div>
       <button class="copy-btn" onclick="copyCoords()">⧉ COPY COORDS</button>
       <a class="map-link" id="mapLink" href="#" target="_blank">🗺 OPEN MAP</a>
     </div>
   </div>
 
-  <!-- ─── EMERGENCY / SOS ─── -->
+  <!-- SOS -->
   <div class="section">
     <div class="section-label">Emergency</div>
     <div class="sos-card">
-      <div class="sos-header">
-        <div class="sos-title">🆘 SOS</div>
-        <div class="sos-badge">TAP TO CALL</div>
-      </div>
+      <div class="sos-header"><div class="sos-title">🆘 SOS</div><div class="sos-badge">TAP TO CALL</div></div>
       <div class="sos-grid">
-        <a class="sos-row" href="tel:911">
-          <div class="sos-row-icon">🚨</div>
-          <div class="sos-row-info">
-            <div class="sos-row-title">Emergency Services</div>
-            <div class="sos-row-detail">911 · Police / Fire / EMS</div>
-          </div>
-          <div class="sos-row-arrow">›</div>
-        </a>
-        <a class="sos-row" href="tel:18004243673">
-          <div class="sos-row-icon">🏔️</div>
-          <div class="sos-row-info">
-            <div class="sos-row-title">Search & Rescue</div>
-            <div class="sos-row-detail">1-800-424-3673 · NASAR</div>
-          </div>
-          <div class="sos-row-arrow">›</div>
-        </a>
-        <!-- ✏️ CUSTOMIZE: Replace with your emergency contact -->
-        <a class="sos-row" href="tel:+15551234567" id="iceSosRow">
-          <div class="sos-row-icon">👤</div>
-          <div class="sos-row-info">
-            <div class="sos-row-title" id="iceContactName">Emergency Contact</div>
-            <div class="sos-row-detail" id="iceContactNum">+1 (555) 123-4567</div>
-          </div>
-          <div class="sos-row-arrow">›</div>
-        </a>
+        <a class="sos-row" href="tel:911"><div class="sos-row-icon">🚨</div><div class="sos-row-info"><div class="sos-row-title">Emergency Services</div><div class="sos-row-detail">911 · Police / Fire / EMS</div></div><div class="sos-row-arrow">›</div></a>
+        <a class="sos-row" href="tel:18004243673"><div class="sos-row-icon">🏔️</div><div class="sos-row-info"><div class="sos-row-title">Search & Rescue</div><div class="sos-row-detail">1-800-424-3673 · NASAR</div></div><div class="sos-row-arrow">›</div></a>
+        <a class="sos-row" href="tel:+14169182844"><div class="sos-row-icon">👤</div><div class="sos-row-info"><div class="sos-row-title">Suzanne Desrochers (Partner)</div><div class="sos-row-detail">+1 (416) 918-2844</div></div><div class="sos-row-arrow">›</div></a>
       </div>
     </div>
   </div>
 
-  <!-- ─── PERSONAL CONTACT INFO ─── -->
+  <!-- HIKER ID -->
   <div class="section">
     <div class="section-label">Hiker ID</div>
     <div class="contact-card">
       <div class="contact-identity">
         <div class="avatar">🧗</div>
         <div>
-          <!-- ✏️ CUSTOMIZE: Replace with your info -->
-          <div class="contact-name" id="hikerName">Rod Dioso</div>
-          <div class="contact-note" id="hikerNote">Trail: (park/trail here)</div>
+          <div class="contact-name">Rod Dioso</div>
+          <div class="contact-note">Trail: (park/trail here)</div>
         </div>
       </div>
       <div class="contact-rows">
-        <a class="contact-row" href="tel:+14168448910">
-          <div class="contact-row-icon">📱</div>
-          <div class="contact-row-info">
-            <div class="contact-row-label">MOBILE</div>
-            <div class="contact-row-val" id="hikerPhone">+1 (416)844-8910</div>
-          </div>
-        </a>
-        <div class="contact-row">
-          <div class="contact-row-icon">🩺</div>
-          <div class="contact-row-info">
-            <div class="contact-row-label">BLOOD TYPE / ALLERGIES</div>
-            <!-- ✏️ CUSTOMIZE -->
-            <div class="contact-row-val" id="hikerMedical">B- · No known allergies</div>
-          </div>
-        </div>
-        <div class="contact-row">
-          <div class="contact-row-icon">🎒</div>
-          <div class="contact-row-info">
-            <div class="contact-row-label">GEAR / BEACON ID</div>
-            <!-- ✏️ CUSTOMIZE -->
-            <div class="contact-row-val" id="hikerGear">PLB Registered · ID: A1B2C3</div>
-          </div>
-        </div>
+        <a class="contact-row" href="tel:+14168448910"><div class="contact-row-icon">📱</div><div class="contact-row-info"><div class="contact-row-label">MOBILE</div><div class="contact-row-val">+1 (416) 844-8910</div></div></a>
+        <div class="contact-row"><div class="contact-row-icon">🩺</div><div class="contact-row-info"><div class="contact-row-label">BLOOD TYPE / ALLERGIES</div><div class="contact-row-val">B- · No known allergies</div></div></div>
+        <div class="contact-row"><div class="contact-row-icon">🎒</div><div class="contact-row-info"><div class="contact-row-label">GEAR / BEACON ID</div><div class="contact-row-val">n/a</div></div></div>
       </div>
     </div>
   </div>
 
-  <!-- ─── FOOTER ─── -->
   <div class="footer">
     <button class="refresh-btn" onclick="window.location.reload()">↻ REFRESH DATA</button>
     <div style="margin-top:16px">DATA: OPEN-METEO · SUNRISE-SUNSET.ORG</div>
@@ -948,65 +296,26 @@
   </div>
 
 </div>
-
 <script>
-  // ════════════════════════════════════════════════════════════
-  // ✏️ CUSTOMIZE YOUR PERSONAL INFO HERE
-  // ════════════════════════════════════════════════════════════
-  const CONFIG = {
-    name:         "Rod Dioso",
-    phone:        "+1 (416) 844-8910",
-    phoneRaw:     "+14168448910",
-    medical:      "B+ · No known allergies",
-    gear:         "n/a",
-    trailNote:    "n/a",
-    iceContact:   "Suzanne Desrochers (Partner)",
-    icePhone:     "+1 (416) 918-2844",
-    icePhoneRaw:  "+14169182844",
-  };
-
-  // ════════════════════════════════════════════════════════════
-  // Apply config to DOM
-  // ════════════════════════════════════════════════════════════
-  document.getElementById('hikerName').textContent    = CONFIG.name;
-  document.getElementById('hikerPhone').textContent   = CONFIG.phone;
-  document.getElementById('hikerMedical').textContent = CONFIG.medical;
-  document.getElementById('hikerGear').textContent    = CONFIG.gear;
-  document.getElementById('hikerNote').textContent    = CONFIG.trailNote;
-  document.getElementById('iceContactName').textContent = CONFIG.iceContact;
-  document.getElementById('iceContactNum').textContent  = CONFIG.icePhone;
-  document.getElementById('iceSosRow').href = 'tel:' + CONFIG.icePhoneRaw;
-  document.querySelector('a[href^="tel:+1555"]').href  = 'tel:' + CONFIG.phoneRaw;
-
-  // ════════════════════════════════════════════════════════════
-  // Live clock
-  // ════════════════════════════════════════════════════════════
+  // Clock
   function updateClock() {
-    const now = new Date();
-    const t = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false });
-    document.getElementById('timeDisplay').textContent = t;
+    document.getElementById('timeDisplay').textContent =
+      new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
   }
   updateClock();
   setInterval(updateClock, 1000);
-  document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
 
-  // ════════════════════════════════════════════════════════════
-  // Status badge helper
-  // ════════════════════════════════════════════════════════════
+  // Status
   function setStatus(state, text) {
-    const badge = document.getElementById('statusBadge');
-    const label = document.getElementById('statusText');
-    badge.className = 'status-badge ' + state;
-    label.textContent = text;
+    document.getElementById('statusBadge').className = 'status-badge ' + state;
+    document.getElementById('statusText').textContent = text;
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Coord copy
-  // ════════════════════════════════════════════════════════════
+  // Copy coords
   let _lat = null, _lng = null;
   function copyCoords() {
-    if (_lat && _lng) {
-      navigator.clipboard.writeText(`${_lat.toFixed(6)}, ${_lng.toFixed(6)}`).then(() => {
+    if (_lat !== null && _lng !== null) {
+      navigator.clipboard.writeText(_lat.toFixed(6) + ', ' + _lng.toFixed(6)).then(() => {
         const btn = document.querySelector('.copy-btn');
         btn.textContent = '✓ COPIED!';
         setTimeout(() => btn.textContent = '⧉ COPY COORDS', 2000);
@@ -1014,44 +323,71 @@
     }
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Weather code → description + emoji
-  // ════════════════════════════════════════════════════════════
-  const WMO = {
-    0: ['Clear Sky', '☀️'],
-    1: ['Mainly Clear', '🌤️'], 2: ['Partly Cloudy', '⛅'], 3: ['Overcast', '☁️'],
-    45: ['Foggy', '🌫️'], 48: ['Icy Fog', '🌫️'],
-    51: ['Light Drizzle', '🌦️'], 53: ['Drizzle', '🌦️'], 55: ['Heavy Drizzle', '🌧️'],
-    61: ['Light Rain', '🌧️'], 63: ['Rain', '🌧️'], 65: ['Heavy Rain', '🌧️'],
-    71: ['Light Snow', '🌨️'], 73: ['Snow', '❄️'], 75: ['Heavy Snow', '❄️'],
-    77: ['Snow Grains', '🌨️'],
-    80: ['Rain Showers', '🌦️'], 81: ['Rain Showers', '🌧️'], 82: ['Violent Showers', '⛈️'],
-    85: ['Snow Showers', '🌨️'], 86: ['Heavy Snow Showers', '❄️'],
-    95: ['Thunderstorm', '⛈️'], 96: ['Thunderstorm + Hail', '⛈️'], 99: ['Severe Thunderstorm', '⛈️'],
+  // Toggle manual entry
+  function toggleManual() {
+    document.getElementById('manualBlock').classList.toggle('visible');
+  }
+
+  // Load from manual input
+  function loadManual() {
+    const lat = parseFloat(document.getElementById('manualLat').value);
+    const lng = parseFloat(document.getElementById('manualLng').value);
+    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      alert('Please enter valid coordinates.\nLatitude: -90 to 90\nLongitude: -180 to 180');
+      return;
+    }
+    document.getElementById('locationSection').style.display = 'none';
+    setStatus('loading', 'FETCHING');
+    loadAll(lat, lng, null, 'manual');
+  }
+
+  // Request GPS
+  function requestGPS() {
+    setStatus('loading', 'LOCATING');
+    if (!('geolocation' in navigator)) {
+      setStatus('error', 'NO GPS API');
+      document.getElementById('manualBlock').classList.add('visible');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        document.getElementById('locationSection').style.display = 'none';
+        setStatus('loading', 'FETCHING');
+        loadAll(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, 'gps');
+      },
+      function(err) {
+        setStatus('error', 'GPS DENIED');
+        document.getElementById('manualBlock').classList.add('visible');
+        document.getElementById('gpsCoords').textContent = 'GPS was denied. Enter coordinates manually above.';
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+    );
+  }
+
+  // WMO weather codes
+  var WMO = {
+    0:['Clear Sky','☀️'],1:['Mainly Clear','🌤️'],2:['Partly Cloudy','⛅'],3:['Overcast','☁️'],
+    45:['Foggy','🌫️'],48:['Icy Fog','🌫️'],
+    51:['Light Drizzle','🌦️'],53:['Drizzle','🌦️'],55:['Heavy Drizzle','🌧️'],
+    61:['Light Rain','🌧️'],63:['Rain','🌧️'],65:['Heavy Rain','🌧️'],
+    71:['Light Snow','🌨️'],73:['Snow','❄️'],75:['Heavy Snow','❄️'],77:['Snow Grains','🌨️'],
+    80:['Rain Showers','🌦️'],81:['Rain Showers','🌧️'],82:['Violent Showers','⛈️'],
+    85:['Snow Showers','🌨️'],86:['Heavy Snow Showers','❄️'],
+    95:['Thunderstorm','⛈️'],96:['Thunderstorm + Hail','⛈️'],99:['Severe Thunderstorm','⛈️']
   };
 
-  // ════════════════════════════════════════════════════════════
-  // UV risk label
-  // ════════════════════════════════════════════════════════════
-  function uvRisk(uv) {
-    if (uv < 3)  return 'LOW RISK';
-    if (uv < 6)  return 'MODERATE';
-    if (uv < 8)  return 'HIGH — COVER UP';
+  function uvRiskLabel(uv) {
+    if (uv < 3) return 'LOW RISK';
+    if (uv < 6) return 'MODERATE';
+    if (uv < 8) return 'HIGH — COVER UP';
     if (uv < 11) return 'VERY HIGH';
     return 'EXTREME';
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Wind direction
-  // ════════════════════════════════════════════════════════════
-  function windDir(deg) {
-    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
-    return dirs[Math.round(deg / 45) % 8];
+  function windDirLabel(deg) {
+    return ['N','NE','E','SE','S','SW','W','NW'][Math.round(deg / 45) % 8];
   }
 
-  // ════════════════════════════════════════════════════════════
-  // AQI label (from PM2.5 µg/m³)
-  // ════════════════════════════════════════════════════════════
   function aqiLabel(pm) {
     if (pm < 12)   return ['GOOD', '#7dba57'];
     if (pm < 35.4) return ['MODERATE', '#e8c020'];
@@ -1060,175 +396,101 @@
     return ['HAZARDOUS', '#9b40e8'];
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Main fetch pipeline
-  // ════════════════════════════════════════════════════════════
-  async function loadAll(lat, lng, alt) {
+  // Main pipeline
+  async function loadAll(lat, lng, alt, source) {
     _lat = lat; _lng = lng;
+    document.getElementById('latDisplay').textContent = 'LAT ' + lat.toFixed(5);
+    document.getElementById('lngDisplay').textContent = 'LNG ' + lng.toFixed(5);
+    document.getElementById('gpsCoords').innerHTML = 'LAT &nbsp;' + lat.toFixed(6) + '°<br>LNG &nbsp;' + lng.toFixed(6) + '°';
+    document.getElementById('gpsAccuracy').textContent = source === 'manual' ? 'Manually entered coordinates' : (alt != null ? 'Device altitude: ' + Math.round(alt) + ' m' : 'GPS location');
+    document.getElementById('mapLink').href = 'https://maps.google.com/?q=' + lat + ',' + lng;
+    if (alt != null) document.getElementById('elevVal').textContent = Math.round(alt);
 
-    // Update header coords
-    document.getElementById('latDisplay').textContent = `LAT ${lat.toFixed(5)}`;
-    document.getElementById('lngDisplay').textContent = `LNG ${lng.toFixed(5)}`;
+    await Promise.all([fetchWeather(lat, lng), fetchSunTimes(lat, lng), fetchAirQuality(lat, lng)]);
 
-    // GPS card
-    document.getElementById('gpsCoords').innerHTML =
-      `LAT &nbsp;${lat.toFixed(6)}°<br>LNG &nbsp;${lng.toFixed(6)}°`;
-    document.getElementById('gpsAccuracy').textContent = alt != null
-      ? `Altitude from device: ${Math.round(alt)} m` : '';
-    document.getElementById('mapLink').href =
-      `https://maps.google.com/?q=${lat},${lng}`;
-
-    if (alt != null) {
-      document.getElementById('elevVal').textContent = Math.round(alt);
-    }
-
-    // Parallel fetches
-    await Promise.all([
-      fetchWeather(lat, lng),
-      fetchSunTimes(lat, lng),
-      fetchAirQuality(lat, lng),
-    ]);
-
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
     setStatus('ready', 'LIVE');
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Weather (Open-Meteo — no API key)
-  // ════════════════════════════════════════════════════════════
   async function fetchWeather(lat, lng) {
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}`
-        + `&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m`
-        + `,precipitation_probability,precipitation,cloud_cover,visibility,wind_speed_10m`
-        + `,wind_direction_10m,uv_index`
-        + `&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto`;
-
-      const res = await fetch(url);
-      const d   = await res.json();
-      const c   = d.current;
-
-      const wmo = WMO[c.weather_code] || ['Unknown', '🌡️'];
-      document.getElementById('tempVal').textContent     = `${Math.round(c.temperature_2m)}°C`;
-      document.getElementById('feelsLike').textContent  = `FEELS LIKE ${Math.round(c.apparent_temperature)}°C`;
+      var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lng
+        + '&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m'
+        + ',precipitation_probability,precipitation,cloud_cover,visibility,wind_speed_10m'
+        + ',wind_direction_10m,uv_index&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto';
+      var res = await fetch(url);
+      var d = await res.json();
+      var c = d.current;
+      var wmo = WMO[c.weather_code] || ['Unknown','🌡️'];
+      document.getElementById('tempVal').textContent = Math.round(c.temperature_2m) + '°C';
+      document.getElementById('feelsLike').textContent = 'FEELS LIKE ' + Math.round(c.apparent_temperature) + '°C';
       document.getElementById('weatherIconBig').textContent = wmo[1];
-      document.getElementById('weatherDesc').textContent    = wmo[0];
-      document.getElementById('precipVal').textContent  = c.precipitation_probability ?? '--';
-      document.getElementById('cloudVal').textContent   = (c.cloud_cover ?? '--') + '%';
-      document.getElementById('visVal').textContent     = c.visibility != null
-        ? (c.visibility / 1000).toFixed(1) + 'km' : '--';
-
-      document.getElementById('uvVal').textContent    = c.uv_index ?? '--';
-      document.getElementById('uvRisk').textContent   = c.uv_index != null ? uvRisk(c.uv_index) : '--';
-      document.getElementById('windVal').textContent  = Math.round(c.wind_speed_10m ?? 0);
-      document.getElementById('windDir').textContent  = c.wind_direction_10m != null
-        ? `FROM ${windDir(c.wind_direction_10m)} (${c.wind_direction_10m}°)` : '--';
-      document.getElementById('humidVal').textContent = c.relative_humidity_2m ?? '--';
-      document.getElementById('humidNote').textContent = (c.relative_humidity_2m ?? 0) > 80
-        ? 'HIGH — HYPOTHERMIA RISK' : 'COMFORTABLE';
-      document.getElementById('rainVal').textContent  = c.precipitation ?? '0';
-      document.getElementById('rainNote').textContent = c.precipitation > 0
-        ? 'ACTIVE PRECIPITATION' : 'DRY CONDITIONS';
-
+      document.getElementById('weatherDesc').textContent = wmo[0];
+      document.getElementById('precipVal').textContent = c.precipitation_probability != null ? c.precipitation_probability : '--';
+      document.getElementById('cloudVal').textContent = (c.cloud_cover != null ? c.cloud_cover : '--') + '%';
+      document.getElementById('visVal').textContent = c.visibility != null ? (c.visibility / 1000).toFixed(1) + 'km' : '--';
+      document.getElementById('uvVal').textContent = c.uv_index != null ? c.uv_index : '--';
+      document.getElementById('uvRisk').textContent = c.uv_index != null ? uvRiskLabel(c.uv_index) : '--';
+      document.getElementById('windVal').textContent = Math.round(c.wind_speed_10m || 0);
+      document.getElementById('windDir').textContent = c.wind_direction_10m != null ? 'FROM ' + windDirLabel(c.wind_direction_10m) + ' (' + c.wind_direction_10m + '°)' : '--';
+      document.getElementById('humidVal').textContent = c.relative_humidity_2m != null ? c.relative_humidity_2m : '--';
+      document.getElementById('humidNote').textContent = (c.relative_humidity_2m || 0) > 80 ? 'HIGH — HYPOTHERMIA RISK' : 'COMFORTABLE';
+      document.getElementById('rainVal').textContent = c.precipitation != null ? c.precipitation : '0';
+      document.getElementById('rainNote').textContent = c.precipitation > 0 ? 'ACTIVE PRECIPITATION' : 'DRY CONDITIONS';
     } catch(e) {
       document.getElementById('weatherDesc').textContent = 'Weather unavailable — check signal';
     }
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Sunrise / Sunset (sunrise-sunset.org — no API key)
-  // ════════════════════════════════════════════════════════════
   async function fetchSunTimes(lat, lng) {
     try {
-      const url = `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&formatted=0`;
-      const res = await fetch(url);
-      const d   = await res.json();
-      const r   = d.results;
-
-      const rise = new Date(r.sunrise);
-      const set  = new Date(r.sunset);
-      const fmt  = d => d.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12: false });
-
+      var res = await fetch('https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + lng + '&formatted=0');
+      var d = await res.json();
+      var rise = new Date(d.results.sunrise);
+      var set  = new Date(d.results.sunset);
+      var fmt  = function(x){ return x.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}); };
       document.getElementById('sunriseTime').textContent = fmt(rise);
       document.getElementById('sunsetTime').textContent  = fmt(set);
-
-      const dayMs = set - rise;
-      const dayHr = (dayMs / 3600000).toFixed(1);
-      document.getElementById('daylightHours').textContent = dayHr + 'h';
-
-      // Progress bar
-      const now   = new Date();
-      const total = set - rise;
-      const elapsed = now - rise;
-      const pct   = Math.min(100, Math.max(0, (elapsed / total) * 100));
+      document.getElementById('daylightHours').textContent = ((set - rise) / 3600000).toFixed(1) + 'h';
+      var now = new Date();
+      var pct = Math.min(100, Math.max(0, ((now - rise) / (set - rise)) * 100));
       document.getElementById('daylightFill').style.width = pct + '%';
-
-      let note;
-      if (now < rise) note = `Sunrise in ${Math.round((rise - now) / 60000)}min`;
-      else if (now < set) {
-        const rem = Math.round((set - now) / 60000);
-        note = rem > 60
-          ? `${Math.floor(rem/60)}h ${rem%60}min until sunset`
-          : `⚠️ ${rem}min until sunset — plan return`;
-      } else note = 'After sunset — use light';
-
+      var note;
+      if (now < rise) {
+        note = 'Sunrise in ' + Math.round((rise - now) / 60000) + 'min';
+      } else if (now < set) {
+        var rem = Math.round((set - now) / 60000);
+        note = rem > 60 ? Math.floor(rem/60) + 'h ' + (rem%60) + 'min until sunset' : '⚠️ ' + rem + 'min until sunset — plan return';
+      } else {
+        note = 'After sunset — use light';
+      }
       document.getElementById('daylightProgress').textContent = note;
-
     } catch(e) {
       document.getElementById('sunriseTime').textContent = 'N/A';
       document.getElementById('sunsetTime').textContent  = 'N/A';
     }
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Air Quality (Open-Meteo Air Quality — no key)
-  // ════════════════════════════════════════════════════════════
   async function fetchAirQuality(lat, lng) {
     try {
-      const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}`
-        + `&current=pm2_5,us_aqi`;
-      const res = await fetch(url);
-      const d   = await res.json();
-      const c   = d.current;
-
+      var res = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lng + '&current=pm2_5,us_aqi');
+      var d = await res.json();
+      var c = d.current;
       if (c) {
-        const pm = c.pm2_5 ?? 0;
-        const [label, color] = aqiLabel(pm);
-        document.getElementById('aqiVal').textContent  = c.us_aqi ?? Math.round(pm);
-        document.getElementById('aqiNote').textContent = label;
-        document.getElementById('aqiVal').style.color  = color;
+        var pm = c.pm2_5 || 0;
+        var al = aqiLabel(pm);
+        document.getElementById('aqiVal').textContent  = c.us_aqi != null ? c.us_aqi : Math.round(pm);
+        document.getElementById('aqiNote').textContent = al[0];
+        document.getElementById('aqiVal').style.color  = al[1];
       }
     } catch(e) {
       document.getElementById('aqiNote').textContent = 'Unavailable';
     }
   }
 
-  // ════════════════════════════════════════════════════════════
-  // Geolocation → trigger everything
-  // ════════════════════════════════════════════════════════════
+  // Auto-attempt GPS on load
   setStatus('loading', 'LOCATING');
-
-  if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(
-function requestLocation() {
-  setStatus('loading', 'LOCATING');
-  if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        setStatus('loading', 'FETCHING');
-        document.getElementById('locationBtn').style.display = 'none';
-        loadAll(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude);
-      },
-      err => {
-        setStatus('error', 'NO GPS');
-        document.getElementById('locationBtn').style.display = 'block';
-        document.getElementById('gpsCoords').textContent = 'Tap the button below to allow location access.';
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
-    );
-  }
-}
-
-requestLocation();
+  requestGPS();
 </script>
 </body>
 </html>
