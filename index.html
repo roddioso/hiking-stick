@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,6 +65,10 @@
     .btn-load{width:100%;background:rgba(74,140,79,0.15);border:1px solid var(--leaf);color:var(--glow);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:11px;border-radius:8px;cursor:pointer;transition:background 0.2s;margin-top:4px;}
     .btn-load:active{background:rgba(74,140,79,0.3);}
     .input-hint{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--fern);margin-top:8px;line-height:1.6;}
+    .gps-status-msg{font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 10px;border-radius:6px;margin-bottom:12px;display:none;}
+    .gps-status-msg.visible{display:block;}
+    .gps-status-msg.warn{background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.3);color:var(--amber);}
+    .gps-status-msg.err{background:rgba(232,64,64,0.1);border:1px solid rgba(232,64,64,0.25);color:var(--danger);}
 
     /* WEATHER HERO */
     .weather-hero{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:20px;backdrop-filter:blur(8px);position:relative;overflow:hidden;}
@@ -167,12 +172,13 @@
     </div>
   </div>
 
-  <!-- LOCATION PROMPT -->
+  <!-- LOCATION PROMPT — hidden by default, shown only if GPS fails -->
   <div class="section" id="locationSection" style="display:none">
     <div class="section-label">Location</div>
     <div class="location-prompt">
       <div class="location-prompt-title">📍 Set Your Location</div>
-      <p>Tap USE GPS to auto-detect your position, or enter coordinates manually if GPS is unavailable or denied.</p>
+      <div class="gps-status-msg" id="gpsStatusMsg"></div>
+      <p>Tap USE GPS to try again, or enter coordinates manually.</p>
       <div class="loc-btn-row">
         <button class="btn-gps" onclick="requestGPS()">📡 USE GPS</button>
         <button class="btn-manual" onclick="toggleManual()">✏️ ENTER MANUALLY</button>
@@ -208,7 +214,7 @@
         </div>
         <div class="weather-icon-big" id="weatherIconBig">🌡️</div>
       </div>
-      <div class="weather-desc" id="weatherDesc">Waiting for location…</div>
+      <div class="weather-desc" id="weatherDesc">Acquiring GPS…</div>
       <div class="weather-grid">
         <div class="weather-stat"><div class="weather-stat-val" id="precipVal">--</div><div class="weather-stat-label">PRECIP %</div></div>
         <div class="weather-stat"><div class="weather-stat-val" id="cloudVal">--</div><div class="weather-stat-label">CLOUD CVR</div></div>
@@ -242,7 +248,7 @@
         <div class="sun-item"><div style="font-size:24px">🌇</div><div class="sun-time" id="sunsetTime">--:--</div><div class="sun-label">SUNSET</div></div>
       </div>
       <div class="daylight-bar"><div class="daylight-fill" id="daylightFill" style="width:0%"></div></div>
-      <div class="daylight-label" id="daylightProgress">Waiting for location…</div>
+      <div class="daylight-label" id="daylightProgress">Acquiring GPS…</div>
     </div>
   </div>
 
@@ -250,7 +256,7 @@
   <div class="section">
     <div class="section-label">GPS Position</div>
     <div class="gps-card">
-      <div class="gps-coords" id="gpsCoords">Waiting for location…</div>
+      <div class="gps-coords" id="gpsCoords">Acquiring GPS signal…</div>
       <div class="gps-accuracy" id="gpsAccuracy"></div>
       <button class="copy-btn" onclick="copyCoords()">⧉ COPY COORDS</button>
       <a class="map-link" id="mapLink" href="#" target="_blank">🗺 OPEN MAP</a>
@@ -297,7 +303,7 @@
 
 </div>
 <script>
-  // Clock
+  // ── Clock ──────────────────────────────────────────────────────────────────
   function updateClock() {
     document.getElementById('timeDisplay').textContent =
       new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
@@ -305,33 +311,32 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // Status
+  // ── Status badge ───────────────────────────────────────────────────────────
   function setStatus(state, text) {
     document.getElementById('statusBadge').className = 'status-badge ' + state;
     document.getElementById('statusText').textContent = text;
   }
 
-  // Copy coords
-  let _lat = null, _lng = null;
+  // ── Copy coords ────────────────────────────────────────────────────────────
+  var _lat = null, _lng = null;
   function copyCoords() {
     if (_lat !== null && _lng !== null) {
-      navigator.clipboard.writeText(_lat.toFixed(6) + ', ' + _lng.toFixed(6)).then(() => {
-        const btn = document.querySelector('.copy-btn');
+      navigator.clipboard.writeText(_lat.toFixed(6) + ', ' + _lng.toFixed(6)).then(function() {
+        var btn = document.querySelector('.copy-btn');
         btn.textContent = '✓ COPIED!';
-        setTimeout(() => btn.textContent = '⧉ COPY COORDS', 2000);
+        setTimeout(function(){ btn.textContent = '⧉ COPY COORDS'; }, 2000);
       });
     }
   }
 
-  // Toggle manual entry
+  // ── Manual entry toggle ────────────────────────────────────────────────────
   function toggleManual() {
     document.getElementById('manualBlock').classList.toggle('visible');
   }
 
-  // Load from manual input
   function loadManual() {
-    const lat = parseFloat(document.getElementById('manualLat').value);
-    const lng = parseFloat(document.getElementById('manualLng').value);
+    var lat = parseFloat(document.getElementById('manualLat').value);
+    var lng = parseFloat(document.getElementById('manualLng').value);
     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
       alert('Please enter valid coordinates.\nLatitude: -90 to 90\nLongitude: -180 to 180');
       return;
@@ -341,30 +346,79 @@
     loadAll(lat, lng, null, 'manual');
   }
 
-  // Request GPS
+  // ── Show location fallback UI ──────────────────────────────────────────────
+  function showLocationFallback(msg, type) {
+    var sec = document.getElementById('locationSection');
+    var msgEl = document.getElementById('gpsStatusMsg');
+    sec.style.display = 'block';
+    msgEl.textContent = msg;
+    msgEl.className = 'gps-status-msg visible ' + (type || 'warn');
+  }
+
+  // ── GPS request ────────────────────────────────────────────────────────────
+  var gpsTimeoutHandle = null;
+
   function requestGPS() {
-    setStatus('loading', 'LOCATING');
     if (!('geolocation' in navigator)) {
-      setStatus('error', 'NO GPS API');
+      setStatus('error', 'NO GPS');
+      showLocationFallback('⚠ Geolocation API not available in this browser.', 'err');
       document.getElementById('manualBlock').classList.add('visible');
       return;
     }
+
+    setStatus('loading', 'LOCATING');
+    document.getElementById('gpsCoords').textContent = 'Acquiring GPS signal…';
+
+    // Safety timeout — if GPS takes >12 s, show fallback UI
+    gpsTimeoutHandle = setTimeout(function() {
+      setStatus('error', 'GPS SLOW');
+      showLocationFallback('⏱ GPS is taking a long time. You can wait, or enter coordinates manually.', 'warn');
+    }, 12000);
+
     navigator.geolocation.getCurrentPosition(
+      // ── SUCCESS ────────────────────────────────────────────────────────────
       function(pos) {
+        clearTimeout(gpsTimeoutHandle);
+        // Hide fallback UI if it was shown during the slow-GPS timeout
         document.getElementById('locationSection').style.display = 'none';
         setStatus('loading', 'FETCHING');
-        loadAll(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, 'gps');
+        loadAll(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, 'gps', pos.coords.accuracy);
       },
+      // ── ERROR ──────────────────────────────────────────────────────────────
       function(err) {
-        setStatus('error', 'GPS DENIED');
+        clearTimeout(gpsTimeoutHandle);
+        var msg;
+        switch (err.code) {
+          case 1: // PERMISSION_DENIED
+            setStatus('error', 'GPS DENIED');
+            msg = '🚫 Location permission denied. Enable it in your browser/device settings, or enter coordinates manually.';
+            break;
+          case 2: // POSITION_UNAVAILABLE
+            setStatus('error', 'NO SIGNAL');
+            msg = '📡 GPS signal unavailable. Try moving outdoors, or enter coordinates manually.';
+            break;
+          case 3: // TIMEOUT
+            setStatus('error', 'GPS TIMEOUT');
+            msg = '⏱ GPS timed out. Try again in an open area, or enter coordinates manually.';
+            break;
+          default:
+            setStatus('error', 'GPS ERROR');
+            msg = '❌ GPS error (' + err.message + '). Enter coordinates manually.';
+        }
+        showLocationFallback(msg, 'err');
         document.getElementById('manualBlock').classList.add('visible');
-        document.getElementById('gpsCoords').textContent = 'GPS was denied. Enter coordinates manually above.';
+        document.getElementById('gpsCoords').textContent = 'GPS unavailable — use manual entry above.';
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+      // ── OPTIONS ────────────────────────────────────────────────────────────
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,       // browser-level timeout
+        maximumAge: 30000     // accept a cached fix up to 30 s old
+      }
     );
   }
 
-  // WMO weather codes
+  // ── WMO codes ──────────────────────────────────────────────────────────────
   var WMO = {
     0:['Clear Sky','☀️'],1:['Mainly Clear','🌤️'],2:['Partly Cloudy','⛅'],3:['Overcast','☁️'],
     45:['Foggy','🌫️'],48:['Icy Fog','🌫️'],
@@ -396,13 +450,22 @@
     return ['HAZARDOUS', '#9b40e8'];
   }
 
-  // Main pipeline
-  async function loadAll(lat, lng, alt, source) {
+  // ── Main pipeline ──────────────────────────────────────────────────────────
+  async function loadAll(lat, lng, alt, source, accuracy) {
     _lat = lat; _lng = lng;
     document.getElementById('latDisplay').textContent = 'LAT ' + lat.toFixed(5);
     document.getElementById('lngDisplay').textContent = 'LNG ' + lng.toFixed(5);
     document.getElementById('gpsCoords').innerHTML = 'LAT &nbsp;' + lat.toFixed(6) + '°<br>LNG &nbsp;' + lng.toFixed(6) + '°';
-    document.getElementById('gpsAccuracy').textContent = source === 'manual' ? 'Manually entered coordinates' : (alt != null ? 'Device altitude: ' + Math.round(alt) + ' m' : 'GPS location');
+
+    var accuracyText = '';
+    if (source === 'manual') {
+      accuracyText = 'Manually entered coordinates';
+    } else {
+      if (alt != null) accuracyText += 'Device altitude: ' + Math.round(alt) + ' m  ';
+      if (accuracy != null) accuracyText += '± ' + Math.round(accuracy) + ' m accuracy';
+      if (!accuracyText) accuracyText = 'GPS location acquired';
+    }
+    document.getElementById('gpsAccuracy').textContent = accuracyText;
     document.getElementById('mapLink').href = 'https://maps.google.com/?q=' + lat + ',' + lng;
     if (alt != null) document.getElementById('elevVal').textContent = Math.round(alt);
 
@@ -488,9 +551,12 @@
     }
   }
 
-  // Auto-attempt GPS on load
-  setStatus('loading', 'LOCATING');
-  requestGPS();
+  // ── Auto-fire GPS on page load ─────────────────────────────────────────────
+  // Small delay gives the browser a moment to finish layout before the
+  // permission prompt appears, which improves reliability on mobile.
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(requestGPS, 300);
+  });
 </script>
 </body>
 </html>
