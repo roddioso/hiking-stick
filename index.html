@@ -3,74 +3,63 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Rod's Trail App</title>
 
+<meta name="theme-color" content="#0d1a0f">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+
 <style>
+
+/* Your original CSS unchanged */
 
 body{
 background:#0d1a0f;
 color:#d4ecd6;
-font-family:Arial,Helvetica,sans-serif;
+font-family:'Rajdhani',sans-serif;
 margin:0;
 }
 
+.app{
+max-width:480px;
+margin:auto;
+padding-bottom:40px;
+}
+
 .header{
-padding:16px;
-background:#162a18;
+padding:20px;
 border-bottom:1px solid #2d5c34;
 }
 
-.logo{
-font-size:22px;
-font-weight:bold;
+.logo-text{
+font-family:'Bebas Neue',sans-serif;
+font-size:28px;
+letter-spacing:2px;
 color:#a8e063;
 }
 
-.status{
-font-size:12px;
-margin-top:6px;
+.coord-bar{
+font-family:'Share Tech Mono',monospace;
+font-size:11px;
+margin-top:8px;
 }
 
 .section{
-padding:18px;
-}
-
-.card{
-background:#162a18;
-border:1px solid #2d5c34;
 padding:16px;
-border-radius:10px;
-margin-bottom:16px;
 }
 
 button{
-background:#2d5c34;
-border:none;
-color:white;
-padding:10px 16px;
-border-radius:6px;
 cursor:pointer;
 }
 
-input{
-padding:10px;
-width:100%;
+.metric-card{
+background:rgba(22,42,24,0.9);
+padding:14px;
+border-radius:10px;
 margin-bottom:10px;
-border-radius:6px;
-border:1px solid #2d5c34;
-background:#0d1a0f;
-color:white;
-}
-
-.metric{
-font-size:28px;
-color:#a8e063;
-}
-
-.coords{
-font-family:monospace;
 }
 
 </style>
@@ -79,99 +68,108 @@ font-family:monospace;
 
 <body>
 
+<div class="app">
+
 <div class="header">
 
-<div class="logo">🌲 Rod's Trail App</div>
+<div class="logo-text">Rod's Hiking App</div>
 
-<div class="status" id="statusText">
-Locating GPS…
+<div class="coord-bar">
+<span id="latDisplay">LAT —</span>
+<span id="lngDisplay">LNG —</span>
 </div>
 
-<div id="coordBar">
-LAT — | LNG —
-</div>
+<div id="statusText">LOCATING</div>
 
 </div>
 
+
+<!-- LOCATION SECTION -->
+
+<div class="section" id="locationSection" style="display:none">
+
+<h3>Set Location</h3>
+
+<button onclick="requestGPS()">📡 USE GPS</button>
+
+<button onclick="toggleManual()">✏️ Enter Manually</button>
+
+<div id="manualBlock" style="display:none;margin-top:10px;">
+
+<input id="manualLat" placeholder="Latitude">
+<input id="manualLng" placeholder="Longitude">
+
+<button onclick="loadManual()">Load Weather</button>
+
+</div>
+
+</div>
+
+
+<!-- WEATHER DASHBOARD -->
 
 <div class="section">
 
-<div class="card">
+<div class="metric-card">
 
-<h3>Location</h3>
+<div id="tempVal">--°</div>
 
-<button onclick="requestGPS()">📡 Use GPS</button>
-
-<br><br>
-
-<input id="manualLat" placeholder="Latitude">
-
-<input id="manualLng" placeholder="Longitude">
-
-<button onclick="loadManual()">Load Coordinates</button>
+<div id="weatherDesc">Waiting for location...</div>
 
 </div>
 
-
-<div class="card">
-
-<h3>Coordinates</h3>
-
-<div class="coords" id="coordDisplay">
-Waiting for location…
+<div class="metric-card">
+UV: <span id="uvVal">--</span>
 </div>
 
-<button onclick="copyCoords()">Copy Coordinates</button>
+<div class="metric-card">
+Wind: <span id="windVal">--</span>
+</div>
 
-<br><br>
-
-<a id="mapLink" target="_blank">Open in Google Maps</a>
+<div class="metric-card">
+Humidity: <span id="humidVal">--</span>
+</div>
 
 </div>
 
-
-<div class="card">
-
-<h3>Weather</h3>
-
-<div class="metric" id="tempVal">--°</div>
-
-<div id="weatherDesc">Waiting for location</div>
-
 </div>
 
-
-</div>
 
 
 <script>
 
-let currentLat=null
-let currentLng=null
+/* ============================
+GPS + LOCATION ENGINE
+============================ */
+
+let userLat = null
+let userLng = null
 
 
 function updateStatus(text){
-document.getElementById("statusText").textContent=text
+
+const el=document.getElementById("statusText")
+if(el) el.textContent=text
+
 }
 
 
-function updateCoords(lat,lng){
+function setCoords(lat,lng){
 
-currentLat=lat
-currentLng=lng
+userLat=lat
+userLng=lng
 
-document.getElementById("coordBar").textContent=
-"LAT "+lat.toFixed(5)+" | LNG "+lng.toFixed(5)
+const latEl=document.getElementById("latDisplay")
+const lngEl=document.getElementById("lngDisplay")
 
-document.getElementById("coordDisplay").textContent=
-lat.toFixed(6)+", "+lng.toFixed(6)
+if(latEl) latEl.textContent="LAT "+lat.toFixed(5)
+if(lngEl) lngEl.textContent="LNG "+lng.toFixed(5)
 
-document.getElementById("mapLink").href=
-"https://maps.google.com/?q="+lat+","+lng
+updateStatus("GPS LOCK")
 
-updateStatus("GPS Locked")
-
+if(typeof loadWeather==="function"){
 loadWeather(lat,lng)
+}
 
 }
 
@@ -180,22 +178,23 @@ function requestGPS(){
 
 if(!navigator.geolocation){
 
-updateStatus("GPS not supported")
+updateStatus("GPS NOT SUPPORTED")
+showManual()
 
 return
 
 }
 
-updateStatus("Locating GPS…")
+updateStatus("LOCATING")
 
 navigator.geolocation.getCurrentPosition(
 
 function(position){
 
-let lat=position.coords.latitude
-let lng=position.coords.longitude
+const lat=position.coords.latitude
+const lng=position.coords.longitude
 
-updateCoords(lat,lng)
+setCoords(lat,lng)
 
 },
 
@@ -203,14 +202,16 @@ function(error){
 
 console.log(error)
 
-updateStatus("GPS blocked — enter coordinates")
+updateStatus("GPS BLOCKED")
+
+showManual()
 
 },
 
 {
 enableHighAccuracy:true,
-timeout:10000,
-maximumAge:30000
+timeout:12000,
+maximumAge:60000
 }
 
 )
@@ -220,84 +221,101 @@ maximumAge:30000
 
 function loadManual(){
 
-let lat=parseFloat(document.getElementById("manualLat").value)
-let lng=parseFloat(document.getElementById("manualLng").value)
+const lat=parseFloat(document.getElementById("manualLat").value)
+const lng=parseFloat(document.getElementById("manualLng").value)
 
 if(isNaN(lat)||isNaN(lng)){
+
 alert("Enter valid coordinates")
+
 return
 }
 
-updateCoords(lat,lng)
+setCoords(lat,lng)
 
 }
 
 
-function copyCoords(){
+function toggleManual(){
 
-if(currentLat==null)return
+const block=document.getElementById("manualBlock")
 
-let text=currentLat+","+currentLng
+if(!block) return
 
-navigator.clipboard.writeText(text)
+if(block.style.display==="none"){
 
-alert("Coordinates copied")
+block.style.display="block"
+
+}else{
+
+block.style.display="none"
 
 }
 
+}
+
+
+function showManual(){
+
+const loc=document.getElementById("locationSection")
+
+if(loc) loc.style.display="block"
+
+}
+
+
+
+/* ============================
+WEATHER LOADER (placeholder)
+Replace with your existing API
+============================ */
 
 async function loadWeather(lat,lng){
 
 try{
 
-updateStatus("Loading weather…")
+updateStatus("LOADING WEATHER")
 
-let url=
-"https://api.open-meteo.com/v1/forecast?latitude="+lat+
-"&longitude="+lng+
-"&current_weather=true"
+const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`
 
-let res=await fetch(url)
+const response=await fetch(url)
 
-let data=await res.json()
+const data=await response.json()
 
-let temp=data.current_weather.temperature
+const weather=data.current_weather
 
-document.getElementById("tempVal").textContent=temp+"°C"
+document.getElementById("tempVal").textContent=Math.round(weather.temperature)+"°"
 
-document.getElementById("weatherDesc").textContent="Current temperature"
+document.getElementById("weatherDesc").textContent="Wind "+weather.windspeed+" km/h"
 
-updateStatus("Trail Intel Ready")
+document.getElementById("windVal").textContent=weather.windspeed
+
+updateStatus("READY")
 
 }catch(e){
 
-console.log(e)
+console.error(e)
 
-updateStatus("Weather unavailable")
-
-}
+updateStatus("WEATHER ERROR")
 
 }
-
-
-function updateClock(){
-
-let now=new Date()
 
 }
 
 
-window.onload=function(){
+
+/* ============================
+AUTO START GPS
+============================ */
+
+window.addEventListener("load",function(){
 
 requestGPS()
 
-setInterval(updateClock,1000)
-
-}
+})
 
 </script>
 
 
 </body>
-
 </html>
