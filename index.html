@@ -296,201 +296,115 @@
   </div>
 
 </div>
+
 <script>
-  // Clock
-  function updateClock() {
-    document.getElementById('timeDisplay').textContent =
-      new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
 
-  // Status
-  function setStatus(state, text) {
-    document.getElementById('statusBadge').className = 'status-badge ' + state;
-    document.getElementById('statusText').textContent = text;
+let userLat = null;
+let userLng = null;
+
+function updateStatus(type, text) {
+  const badge = document.getElementById("statusBadge");
+  const label = document.getElementById("statusText");
+
+  badge.classList.remove("loading","ready","error");
+  badge.classList.add(type);
+  label.textContent = text;
+}
+
+function setCoords(lat, lng) {
+  userLat = lat;
+  userLng = lng;
+
+  document.getElementById("latDisplay").textContent =
+    "LAT " + lat.toFixed(5);
+
+  document.getElementById("lngDisplay").textContent =
+    "LNG " + lng.toFixed(5);
+
+  updateStatus("ready","GPS LOCK");
+
+  loadWeather(lat, lng);
+}
+
+function requestGPS() {
+
+  if (!navigator.geolocation) {
+    updateStatus("error","NO GPS");
+    showManualEntry();
+    return;
   }
 
-  // Copy coords
-  let _lat = null, _lng = null;
-  function copyCoords() {
-    if (_lat !== null && _lng !== null) {
-      navigator.clipboard.writeText(_lat.toFixed(6) + ', ' + _lng.toFixed(6)).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        btn.textContent = '✓ COPIED!';
-        setTimeout(() => btn.textContent = '⧉ COPY COORDS', 2000);
-      });
+  updateStatus("loading","LOCATING");
+
+  navigator.geolocation.getCurrentPosition(
+
+    (position) => {
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      setCoords(lat, lng);
+
+    },
+
+    (error) => {
+
+      console.log(error);
+
+      updateStatus("error","GPS DENIED");
+
+      document.getElementById("locationSection").style.display="block";
+
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:60000
     }
+
+  );
+
+}
+
+function loadManual(){
+
+  const lat = parseFloat(document.getElementById("manualLat").value);
+  const lng = parseFloat(document.getElementById("manualLng").value);
+
+  if(isNaN(lat) || isNaN(lng)){
+    alert("Enter valid coordinates");
+    return;
   }
 
-  // Toggle manual entry
-  function toggleManual() {
-    document.getElementById('manualBlock').classList.toggle('visible');
-  }
+  setCoords(lat,lng);
 
-  // Load from manual input
-  function loadManual() {
-    const lat = parseFloat(document.getElementById('manualLat').value);
-    const lng = parseFloat(document.getElementById('manualLng').value);
-    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      alert('Please enter valid coordinates.\nLatitude: -90 to 90\nLongitude: -180 to 180');
-      return;
-    }
-    document.getElementById('locationSection').style.display = 'none';
-    setStatus('loading', 'FETCHING');
-    loadAll(lat, lng, null, 'manual');
-  }
+}
 
-  // Request GPS
-  function requestGPS() {
-    setStatus('loading', 'LOCATING');
-    if (!('geolocation' in navigator)) {
-      setStatus('error', 'NO GPS API');
-      document.getElementById('manualBlock').classList.add('visible');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      function(pos) {
-        document.getElementById('locationSection').style.display = 'none';
-        setStatus('loading', 'FETCHING');
-        loadAll(pos.coords.latitude, pos.coords.longitude, pos.coords.altitude, 'gps');
-      },
-      function(err) {
-        setStatus('error', 'GPS DENIED');
-        document.getElementById('manualBlock').classList.add('visible');
-        document.getElementById('gpsCoords').textContent = 'GPS was denied. Enter coordinates manually above.';
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
-    );
-  }
+function toggleManual(){
 
-  // WMO weather codes
-  var WMO = {
-    0:['Clear Sky','☀️'],1:['Mainly Clear','🌤️'],2:['Partly Cloudy','⛅'],3:['Overcast','☁️'],
-    45:['Foggy','🌫️'],48:['Icy Fog','🌫️'],
-    51:['Light Drizzle','🌦️'],53:['Drizzle','🌦️'],55:['Heavy Drizzle','🌧️'],
-    61:['Light Rain','🌧️'],63:['Rain','🌧️'],65:['Heavy Rain','🌧️'],
-    71:['Light Snow','🌨️'],73:['Snow','❄️'],75:['Heavy Snow','❄️'],77:['Snow Grains','🌨️'],
-    80:['Rain Showers','🌦️'],81:['Rain Showers','🌧️'],82:['Violent Showers','⛈️'],
-    85:['Snow Showers','🌨️'],86:['Heavy Snow Showers','❄️'],
-    95:['Thunderstorm','⛈️'],96:['Thunderstorm + Hail','⛈️'],99:['Severe Thunderstorm','⛈️']
-  };
+  const block = document.getElementById("manualBlock");
 
-  function uvRiskLabel(uv) {
-    if (uv < 3) return 'LOW RISK';
-    if (uv < 6) return 'MODERATE';
-    if (uv < 8) return 'HIGH — COVER UP';
-    if (uv < 11) return 'VERY HIGH';
-    return 'EXTREME';
-  }
+  block.classList.toggle("visible");
 
-  function windDirLabel(deg) {
-    return ['N','NE','E','SE','S','SW','W','NW'][Math.round(deg / 45) % 8];
-  }
+}
 
-  function aqiLabel(pm) {
-    if (pm < 12)   return ['GOOD', '#7dba57'];
-    if (pm < 35.4) return ['MODERATE', '#e8c020'];
-    if (pm < 55.4) return ['UNHEALTHY SENSITIVE', '#e87820'];
-    if (pm < 150)  return ['UNHEALTHY', '#e84040'];
-    return ['HAZARDOUS', '#9b40e8'];
-  }
+function showManualEntry(){
 
-  // Main pipeline
-  async function loadAll(lat, lng, alt, source) {
-    _lat = lat; _lng = lng;
-    document.getElementById('latDisplay').textContent = 'LAT ' + lat.toFixed(5);
-    document.getElementById('lngDisplay').textContent = 'LNG ' + lng.toFixed(5);
-    document.getElementById('gpsCoords').innerHTML = 'LAT &nbsp;' + lat.toFixed(6) + '°<br>LNG &nbsp;' + lng.toFixed(6) + '°';
-    document.getElementById('gpsAccuracy').textContent = source === 'manual' ? 'Manually entered coordinates' : (alt != null ? 'Device altitude: ' + Math.round(alt) + ' m' : 'GPS location');
-    document.getElementById('mapLink').href = 'https://maps.google.com/?q=' + lat + ',' + lng;
-    if (alt != null) document.getElementById('elevVal').textContent = Math.round(alt);
+  document.getElementById("locationSection").style.display="block";
 
-    await Promise.all([fetchWeather(lat, lng), fetchSunTimes(lat, lng), fetchAirQuality(lat, lng)]);
+}
 
-    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
-    setStatus('ready', 'LIVE');
-  }
+window.addEventListener("load", () => {
 
-  async function fetchWeather(lat, lng) {
-    try {
-      var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lng
-        + '&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m'
-        + ',precipitation_probability,precipitation,cloud_cover,visibility,wind_speed_10m'
-        + ',wind_direction_10m,uv_index&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto';
-      var res = await fetch(url);
-      var d = await res.json();
-      var c = d.current;
-      var wmo = WMO[c.weather_code] || ['Unknown','🌡️'];
-      document.getElementById('tempVal').textContent = Math.round(c.temperature_2m) + '°C';
-      document.getElementById('feelsLike').textContent = 'FEELS LIKE ' + Math.round(c.apparent_temperature) + '°C';
-      document.getElementById('weatherIconBig').textContent = wmo[1];
-      document.getElementById('weatherDesc').textContent = wmo[0];
-      document.getElementById('precipVal').textContent = c.precipitation_probability != null ? c.precipitation_probability : '--';
-      document.getElementById('cloudVal').textContent = (c.cloud_cover != null ? c.cloud_cover : '--') + '%';
-      document.getElementById('visVal').textContent = c.visibility != null ? (c.visibility / 1000).toFixed(1) + 'km' : '--';
-      document.getElementById('uvVal').textContent = c.uv_index != null ? c.uv_index : '--';
-      document.getElementById('uvRisk').textContent = c.uv_index != null ? uvRiskLabel(c.uv_index) : '--';
-      document.getElementById('windVal').textContent = Math.round(c.wind_speed_10m || 0);
-      document.getElementById('windDir').textContent = c.wind_direction_10m != null ? 'FROM ' + windDirLabel(c.wind_direction_10m) + ' (' + c.wind_direction_10m + '°)' : '--';
-      document.getElementById('humidVal').textContent = c.relative_humidity_2m != null ? c.relative_humidity_2m : '--';
-      document.getElementById('humidNote').textContent = (c.relative_humidity_2m || 0) > 80 ? 'HIGH — HYPOTHERMIA RISK' : 'COMFORTABLE';
-      document.getElementById('rainVal').textContent = c.precipitation != null ? c.precipitation : '0';
-      document.getElementById('rainNote').textContent = c.precipitation > 0 ? 'ACTIVE PRECIPITATION' : 'DRY CONDITIONS';
-    } catch(e) {
-      document.getElementById('weatherDesc').textContent = 'Weather unavailable — check signal';
-    }
-  }
-
-  async function fetchSunTimes(lat, lng) {
-    try {
-      var res = await fetch('https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + lng + '&formatted=0');
-      var d = await res.json();
-      var rise = new Date(d.results.sunrise);
-      var set  = new Date(d.results.sunset);
-      var fmt  = function(x){ return x.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}); };
-      document.getElementById('sunriseTime').textContent = fmt(rise);
-      document.getElementById('sunsetTime').textContent  = fmt(set);
-      document.getElementById('daylightHours').textContent = ((set - rise) / 3600000).toFixed(1) + 'h';
-      var now = new Date();
-      var pct = Math.min(100, Math.max(0, ((now - rise) / (set - rise)) * 100));
-      document.getElementById('daylightFill').style.width = pct + '%';
-      var note;
-      if (now < rise) {
-        note = 'Sunrise in ' + Math.round((rise - now) / 60000) + 'min';
-      } else if (now < set) {
-        var rem = Math.round((set - now) / 60000);
-        note = rem > 60 ? Math.floor(rem/60) + 'h ' + (rem%60) + 'min until sunset' : '⚠️ ' + rem + 'min until sunset — plan return';
-      } else {
-        note = 'After sunset — use light';
-      }
-      document.getElementById('daylightProgress').textContent = note;
-    } catch(e) {
-      document.getElementById('sunriseTime').textContent = 'N/A';
-      document.getElementById('sunsetTime').textContent  = 'N/A';
-    }
-  }
-
-  async function fetchAirQuality(lat, lng) {
-    try {
-      var res = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lng + '&current=pm2_5,us_aqi');
-      var d = await res.json();
-      var c = d.current;
-      if (c) {
-        var pm = c.pm2_5 || 0;
-        var al = aqiLabel(pm);
-        document.getElementById('aqiVal').textContent  = c.us_aqi != null ? c.us_aqi : Math.round(pm);
-        document.getElementById('aqiNote').textContent = al[0];
-        document.getElementById('aqiVal').style.color  = al[1];
-      }
-    } catch(e) {
-      document.getElementById('aqiNote').textContent = 'Unavailable';
-    }
-  }
-
-  // Auto-attempt GPS on load
-  setStatus('loading', 'LOCATING');
   requestGPS();
+
+  const now = new Date();
+  document.getElementById("timeDisplay").textContent =
+    now.toLocaleTimeString();
+
+});
+
 </script>
 </body>
 </html>
