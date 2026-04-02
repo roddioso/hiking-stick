@@ -322,6 +322,11 @@
 
 </div>
 <script>
+
+ const pwd = prompt("Enter password:");
+  if (pwd !== "vitaminN") {
+	document.body.innerHTML = "Access denied";
+
   // ── Clock ──────────────────────────────────────────────────────────────────
   function updateClock() {
     document.getElementById('timeDisplay').textContent =
